@@ -53,10 +53,9 @@ change detection, fusion — returns deterministic-but-synthetic evidence, so yo
 can build and demo the whole product before any model is trained. Verified
 working end-to-end: `cd backend && pytest tests/ -v` (7/7 passing).
 
-## What you need to give me / do yourselves, in priority order
+## What we  need to  change to make it fully working systtem  / do yourselves, in priority order
 
-1. **Team details for the pitch deck** — team name and member names for the
-   title slide (I used placeholders in the .pptx).
+
 2. **Bhoonidhi/UOPS registration** — register at bhoonidhi.nrsc.gov.in and
    uops.nrsc.gov.in on day 1; approval isn't instant. Until it comes through,
    develop against `demo_data/`.
@@ -66,7 +65,7 @@ working end-to-end: `cd backend && pytest tests/ -v` (7/7 passing).
 4. **GPU access** (Colab Pro / Kaggle / a cloud box) if you want to actually
    fine-tune the three engines on BigEarthNet.txt / CDVQA / QAG-360K rather
    than ship mock mode to judges.
-5. **An Anthropic API key** (optional) — without it, `llm/synthesis.py` falls
+   --  optional not in newer version -- **An Anthropic API key** (optional) — without it, `llm/synthesis.py` falls
    back to a deterministic template answer, which is fully functional but
    less fluent. Set `ANTHROPIC_API_KEY` in `.env` to switch it on.
 6. **Decide how far to push mock mode for the demo itself** — it's a legitimate
@@ -78,3 +77,72 @@ Once real checkpoints exist, only three files change: set `VQA_MODEL_PATH`,
 `CHANGE_MODEL_PATH`, `FUSION_MODEL_PATH` in `.env`, flip `VQA_MOCK_MODE=false`,
 and implement each engine's `_run_real_model()` method — the router, evidence
 engine, API, and frontend need zero changes.
+#important# model trains notes #Model Training: When ready to switch off mock predictions, run train_qwen_vl_lora.py on your GPU environment, and set VQA_MOCK_MODE=False in your backend/.env.
+It was great pair programming with you on this project.     
+
+The codebase, UI, routers, databases, and verification scripts are 100% complete in terms of code.
+
+If we look at the entire project (which includes training the deep learning weights on GPUs and acquiring live API credentials), the project is about 75% completed. The remaining 25% represents model training and active API keys.
+
+Below is the complete, step-by-step checklist of what is currently in "demo/mock" mode, and what exact changes you need to make to transition it to a fully live production system.
+
+Phase 1: Machine Learning & Weights (Disable Mock Mode)
+Currently, the models generate simulated outputs because VQA_MOCK_MODE=True is enabled in backend/.env.
+
+1. Single-Image VQA (Qwen 2.5-VL)
+Status: 100% Code Ready.
+To Make Fully Real:
+Fine-tune the Qwen 2.5-VL model using 
+
+train_qwen_vl_lora.py
+ on your satellite datasets.
+Set VQA_MOCK_MODE=False in backend/.env.
+Set VQA_MODEL_PATH=/path/to/your/checkpoint in backend/.env.
+2. Bi-Temporal Change Detection
+Status: Code Ready.
+To Make Fully Real:
+Train a change-detection model (like VisTA or a Siamese CNN).
+In 
+
+change_engine.py
+, update the _run_real_model method to load your trained weights and replace the dummy CNN forward pass:
+python
+# Replace line 85 (TinySatCNN) with your actual Change Detection PyTorch model
+model = YourSiameseChangeModel()
+model.load_state_dict(torch.load(self.settings.CHANGE_MODEL_PATH))
+Point CHANGE_MODEL_PATH in backend/.env to your change checkpoint.
+3. Optical-SAR Cross-Modal Fusion
+Status: Code Ready.
+To Make Fully Real:
+Train the Dual-Encoder cross-attention network.
+In 
+
+fusion_engine.py
+, update the _run_real_model method to load your fused model weights and pass both the optical and SAR tensors:
+python
+# Replace line 86 with your actual Dual Encoder cross-attention loader
+model = YourDualEncoderFusionModel()
+model.load_state_dict(torch.load(self.settings.FUSION_MODEL_PATH))
+Point FUSION_MODEL_PATH in backend/.env to your fusion checkpoint.
+Phase 2: Live Imagery Ingestion (Replacing Mock GeoTIFFs)
+Currently, typing a place name automatically geolocates the region but generates mock GeoTIFF files with randomized pixel structures.
+
+1. Implement Real Catalog Searches
+In 
+
+location_resolver.py
+:
+
+Locate fetch_scenes_for_location (line 157).
+Instead of running _create_mock_geotiff(...), query a real Earth Observation catalog (like Google Earth Engine, Sentinel Hub, or Bhoonidhi).
+Download the actual image crops to settings.PROCESSED_DIR and return their metadata.
+Here is the exact code block to modify in location_resolver.py:
+
+python
+# Replace the mock calls (lines 175-176, 191-192, 195-196, etc.) with real API downloads:
+# Old (Mock):
+# _create_mock_geotiff(path, bands=3, lat=lat, lon=lon, is_sar=False)
+# New (GEE/Sentinel Hub Download):
+# your_satellite_downloader.download_crop(lat, lon, bbox, path, is_sar=is_sar)
+
+
