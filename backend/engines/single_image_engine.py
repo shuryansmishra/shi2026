@@ -310,3 +310,4 @@ class SingleImageEngine:
         if SubTask.GROUNDING in sub_tasks and image.bbox_latlon:
             result["bbox_latlon"] = image.bbox_latlon
         return result
+

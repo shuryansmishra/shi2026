@@ -109,6 +109,11 @@ class ChangeEngine:
             raise RuntimeError("torch/skimage not installed.")
 
         model = TinySiameseChange(num_classes=len(MOCK_CHANGE_CLASSES))
+        if self.settings.CHANGE_MODEL_PATH and os.path.exists(self.settings.CHANGE_MODEL_PATH):
+            try:
+                model.load_state_dict(torch.load(self.settings.CHANGE_MODEL_PATH, map_location="cpu"))
+            except Exception as e:
+                print(f"[!] Could not load Change model weights: {e}")
         model.eval()
 
         ssim_score = 0.85

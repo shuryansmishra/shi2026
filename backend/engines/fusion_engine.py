@@ -120,6 +120,11 @@ class FusionEngine:
             raise RuntimeError("torch not installed")
 
         model = TinyDualEncoderFusion(num_classes=len(MOCK_LAND_COVER_CLASSES))
+        if self.settings.FUSION_MODEL_PATH and os.path.exists(self.settings.FUSION_MODEL_PATH):
+            try:
+                model.load_state_dict(torch.load(self.settings.FUSION_MODEL_PATH, map_location="cpu"))
+            except Exception as e:
+                print(f"[!] Could not load Fusion model weights: {e}")
         model.eval()
 
         computed_area_ha = 15.0
