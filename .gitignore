@@ -1,0 +1,43 @@
+# Virtual Environments
+backend/venv/
+backend/.venv/
+ENV/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.hypothesis/
+
+# Node modules & builds
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Local database and uploads storage
+storage/
+backend/storage/
+backend/satquery.db
+backend/evaluation_results.json
+backend/evaluation_results.md
+backend/benchmark_results.json
+backend/benchmark_results.md
+backend/demo_data/vqa_dataset.json
+
+# Environment variables & secrets
+.env
+backend/.env
+backend/.env.production
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
