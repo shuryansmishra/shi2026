@@ -6,10 +6,11 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Frontend calls /api/* and /health, Vite forwards both to the
+      // Frontend calls /api/*, /health, /static, Vite forwards to the
       // FastAPI backend -- avoids CORS friction during local development.
       "/api": "http://localhost:8000",
       "/health": "http://localhost:8000",
+      "/static": "http://localhost:8000",
     },
   },
 });

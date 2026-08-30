@@ -1,0 +1,3119 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ==========================================================================
+   ISRO SatQuery AI - Global Design System & Variables
+   ========================================================================== */
+:root {
+  --blue: #0056a7;
+  --blue-hover: #00458a;
+  --blue-light: rgba(0, 86, 167, 0.08);
+  --blue-border: rgba(0, 86, 167, 0.15);
+  --blue-glow: rgba(0, 86, 167, 0.25);
+  
+  --green: #34c759;
+  --green-online: #34c759;
+  --cyan: #0088ff;
+  --red: #ff3b30;
+  --amber: #f59e0b;
+  
+  --bg: #dce5ee;
+  --glass-bg: rgba(246, 246, 246, 0.72);
+  --glass-nav: rgba(246, 246, 246, 0.72);
+  --glass-card: rgba(255, 255, 255, 0.85);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border-strong: rgba(0, 0, 0, 0.08);
+  --border-line: rgba(0, 0, 0, 0.06);
+  
+  --text: rgba(0, 0, 0, 0.85);
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --text-subtle: rgba(0, 0, 0, 0.38);
+  
+  --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", Inter, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-family);
+  background: #dce5ee;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  font-family: var(--font-family);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   App Shell & Ambient Background
+   ========================================================================== */
+.app-shell {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  padding: 0 16px 16px 16px;
+}
+
+.ambient-backdrop {
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(0, 86, 167, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(0, 136, 255, 0.07) 0%, transparent 40%),
+    linear-gradient(135deg, #E2EBF4 0%, #D4E0ED 50%, #DCE6F2 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+}
+
+/* ==========================================================================
+   1. Exact Figma Navbar
+   ========================================================================== */
+.navbar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 24px;
+  width: 1440px;
+  max-width: 100%;
+  margin: 0 auto 16px auto;
+  height: 64px;
+  background: rgba(246, 246, 246, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.0509804);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.nav-top-bar {
+  display: contents;
+}
+
+.tab-full {
+  display: inline;
+}
+
+.tab-short {
+  display: none;
+}
+
+.nav-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 12px;
+  width: auto;
+  height: 100%;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.title-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  width: auto;
+  height: auto;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.brand-frame {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  width: auto;
+  height: auto;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.brand-title {
+  height: auto;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.brand-subtitle {
+  width: 222px;
+  height: 12px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  color: rgba(0, 0, 0, 0.501961);
+  white-space: nowrap;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 0;
+}
+
+.nav-tabs {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 8px;
+  width: 460px;
+  max-width: 100%;
+  height: 32px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  background: transparent;
+  border: none;
+}
+
+.nav-tab-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 32px;
+  background: rgba(0, 86, 167, 0.0784314);
+  border: 1px solid rgba(0, 86, 167, 0.14902);
+  border-radius: 16px;
+  pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1), width 0.28s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease;
+  z-index: 0;
+  will-change: transform, width;
+}
+
+.nav-tab {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  height: 32px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 510;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(0, 0, 0, 0.501961);
+  cursor: pointer;
+  flex: none;
+  flex-grow: 0;
+  z-index: 1;
+  transition: color 0.22s ease, transform 0.15s ease;
+}
+
+.nav-tab:hover {
+  color: #0056A7;
+}
+
+.nav-tab:active {
+  transform: scale(0.96);
+}
+
+.nav-tab.active {
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 16px;
+  color: #0056A7;
+  border-color: transparent;
+  background: transparent;
+}
+
+.nav-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 16px;
+  width: 127px;
+  height: 20px;
+  flex: none;
+  order: 2;
+  flex-grow: 0;
+}
+
+.status-frame {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 6px;
+  width: 111px;
+  height: 14px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.status-ellipse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34C759;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  display: inline-block;
+}
+
+.status-text {
+  width: 97px;
+  height: 14px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.701961);
+  white-space: nowrap;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.nav-divider-line {
+  box-sizing: border-box;
+  width: 20px;
+  height: 0px;
+  border: 1px solid rgba(0, 0, 0, 0.101961);
+  transform: rotate(90deg);
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+/* ==========================================================================
+   2. Standardized Workspace & 3-Column Grid Layout
+   ========================================================================== */
+.tab-view-enter {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: tabViewFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes tabViewFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.workspace-container {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.workspace, .workspace-3col {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  height: calc(100vh - 96px);
+  min-height: 700px;
+  overflow: hidden;
+}
+
+.workspace-2col {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  height: calc(100vh - 96px);
+  min-height: 700px;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   3. Exact Figma Sidebars (Left & Right)
+   ========================================================================== */
+.sidebar {
+  height: 100%;
+  max-height: 100%;
+  flex: none;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: rgba(246, 246, 246, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.sidebar-left {
+  width: 280px;
+  height: 100%;
+  max-height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  animation: slideInSidebarLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.sidebar-right {
+  width: 320px;
+  height: 100%;
+  max-height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  animation: slideInSidebarRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideInSidebarLeft {
+  0% {
+    opacity: 0.4;
+    transform: translateX(-12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInSidebarRight {
+  0% {
+    opacity: 0.4;
+    transform: translateX(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.left-top, .sidebar-top {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.right-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  width: 100%;
+  padding-right: 0px;
+  box-sizing: border-box;
+}
+
+.right-content::-webkit-scrollbar {
+  width: 4px;
+  height: 0px !important;
+}
+
+.right-content::-webkit-scrollbar-horizontal {
+  display: none !important;
+  height: 0px !important;
+}
+
+.right-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+
+.right-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.title-row h1, .ai-title h1, .sidebar-header h2, .sidebar h2 {
+  margin: 0;
+  color: #000000;
+  font-family: var(--font-family);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.sidebar p, .sidebar-header p {
+  margin: 4px 0 0;
+  font-family: var(--font-family);
+  font-size: 11px;
+  line-height: 13px;
+  color: var(--text-muted);
+}
+
+.rule {
+  height: 1px;
+  margin: 7px 0 12px 0;
+  background: var(--border-line);
+}
+
+/* Timeline & Steps */
+.timeline, .timeline-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+.step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.step-indicator, .indicator {
+  width: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  flex: none;
+}
+
+.step-check, .check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 800;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.step-check.active {
+  background: var(--blue);
+  color: white;
+  box-shadow: 0 0 0 3px rgba(0, 86, 167, 0.25);
+  animation: pulse-step 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-step {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 86, 167, 0.4); }
+  70% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(0, 86, 167, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 86, 167, 0); }
+}
+
+.step-check.pending {
+  background: rgba(0, 0, 0, 0.12);
+  color: transparent;
+}
+
+.step-line, .indicator i {
+  display: block;
+  width: 2px;
+  background: var(--green);
+  flex: 1;
+  min-height: 24px;
+  margin-top: 3px;
+  transition: background 0.25s ease;
+}
+
+.step-line.pending {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.step.last .step-indicator, .step.last .indicator {
+  align-self: flex-start;
+}
+
+.step.last .step-line, .step.last .indicator i {
+  display: none;
+}
+
+.step-body, .step-content, .step div:not(.indicator):not(.step-indicator) {
+  flex: 1;
+  min-width: 0;
+}
+
+.step h2, .step-body h3, .step-content h3 {
+  margin: 1px 0 0;
+  font-family: var(--font-family);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.step-component-tag {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 500;
+  color: var(--blue);
+  background: rgba(0, 86, 167, 0.07);
+  padding: 1px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.step p, .step-body p, .step-content p {
+  margin: 2px 0 0;
+  font-family: var(--font-family);
+  font-size: 10px;
+  line-height: 12.5px;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+/* Confidence Card */
+.confidence-card {
+  width: 100%;
+  padding: 12px;
+  background: var(--glass-card);
+  border: 1px solid rgba(0, 195, 208, 0.25);
+  border-radius: 16px;
+  margin-top: 12px;
+}
+
+.confidence-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.confidence-head img, .confidence-head span.confidence-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--cyan);
+}
+
+.confidence-value {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.confidence-value strong {
+  font-family: var(--font-family);
+  font-size: 22px;
+  line-height: 26px;
+  color: #000000;
+  font-weight: 700;
+}
+
+.confidence-value span {
+  font-family: var(--font-family);
+  font-size: 11px;
+  line-height: 13px;
+  color: var(--green);
+}
+
+/* ==========================================================================
+   4. Exact Figma Center Workspace (Map & Controls)
+   ========================================================================== */
+.main-map, .main-viewport {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: scaleInCenterMap 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes scaleInCenterMap {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.988);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.map-frame {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  background: white;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+}
+
+.map-container-full {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vqa-mapbox-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.split-mapbox-grid {
+  display: flex;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.split-mapbox-pane {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.split-pane-header {
+  position: absolute;
+  top: 14px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 100px;
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.split-pane-header.t1-header {
+  left: 14px;
+  right: auto;
+}
+
+.split-pane-header.t2-header {
+  right: 14px;
+  left: auto;
+}
+
+.link-sync-btn {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(0, 86, 167, 0.9);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  font-family: var(--font-family);
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 86, 167, 0.3);
+  transition: all 0.2s ease;
+}
+
+.link-sync-btn.unlinked {
+  background: rgba(40, 40, 40, 0.85);
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.link-sync-btn:hover {
+  transform: translateX(-50%) scale(1.04);
+}
+
+.custom-map-marker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.marker-pulse {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 195, 208, 0.3);
+  border: 1.5px solid var(--cyan);
+  animation: pulse-step 1.8s infinite;
+  position: absolute;
+}
+
+.marker-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 1.5px solid #FFFFFF;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.marker-title {
+  background: rgba(0, 0, 0, 0.8);
+  color: #FFFFFF;
+  font-family: var(--font-family);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.change-mask-overlay-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  border: 2px dashed #FF3B30;
+  background: radial-gradient(circle at center, rgba(255, 59, 48, 0.25) 0%, rgba(255, 59, 48, 0.08) 70%, transparent 100%);
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-loc-search {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.section-label {
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 9px;
+  line-height: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(0, 0, 0, 0.48);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.compact-search-form {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-pill-group {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.loc-search-input {
+  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 9px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 15px;
+  font-family: var(--font-family);
+  font-size: 11px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.loc-search-input::placeholder {
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 10.5px;
+}
+
+.loc-search-input:focus {
+  background: #FFFFFF;
+  border-color: rgba(0, 86, 167, 0.35);
+}
+
+.loc-date-pill {
+  width: 78px;
+  min-width: 78px;
+  max-width: 78px;
+  height: 30px;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 15px;
+  font-family: var(--font-family);
+  font-size: 9.5px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.85);
+  outline: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.loc-date-pill:focus {
+  background: #FFFFFF;
+  border-color: rgba(0, 86, 167, 0.35);
+}
+
+.loc-action-btn {
+  height: 30px;
+  padding: 0 9px;
+  border-radius: 15px;
+  border: none;
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.loc-action-btn.dark {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.loc-action-btn.blue {
+  background: #0056A7;
+  color: #FFFFFF;
+}
+
+.loc-action-btn:hover {
+  transform: scale(1.04);
+}
+
+.map-half, .split-half {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: #111;
+}
+
+.split-half.diff-half {
+  border: 2px dashed #FF3B30;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  margin: 1px;
+}
+
+.map-half > img, .split-half > img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  pointer-events: none;
+  transform-origin: center center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.splitter, .split-divider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  z-index: 3;
+}
+
+.label, .overlay-label {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: normal;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 4;
+}
+
+.label.optical, .overlay-label.optical {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.label.sar, .overlay-label.sar {
+  background: rgba(229, 57, 53, 0.85);
+}
+
+.label.composite, .overlay-label.composite {
+  background: rgba(0, 86, 167, 0.85);
+}
+
+.change-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(229, 57, 53, 0.16);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.diff-image-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.outline {
+  position: absolute;
+  inset: 0;
+  border: 3px dashed var(--red);
+  pointer-events: none;
+}
+
+.coordinates, .coordinates-badge {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 11px;
+  z-index: 4;
+}
+
+.draw-tool, .draw-tool-badge {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 86, 167, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 8px 12px;
+  color: #000000;
+  font-size: 11.5px;
+  font-weight: 700;
+  z-index: 4;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.live-dot-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: pulse-step 1.2s infinite;
+  display: inline-block;
+  flex: none;
+}
+
+/* Map Layer Style Switcher with Sliding Pill Indicator */
+.map-style-switcher-bar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.map-style-slider {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  height: calc(100% - 8px);
+  background: #0088FF;
+  border-radius: 16px;
+  transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1), width 0.28s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0, 136, 255, 0.35);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.map-style-pill {
+  position: relative;
+  z-index: 1;
+  padding: 6px 14px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 590;
+  color: rgba(0, 0, 0, 0.65);
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.map-style-pill:hover {
+  color: var(--blue);
+}
+
+.map-style-pill.active {
+  color: #FFFFFF !important;
+  font-weight: 700;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Hide Mapbox Logo and Attribution permanently */
+.mapboxgl-ctrl-logo,
+.mapboxgl-ctrl-attrib,
+.mapboxgl-ctrl-attrib-inner,
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right,
+.mapboxgl-compact {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0px !important;
+  width: 0px !important;
+}
+
+/* ==========================================================================
+   Exact Figma Map Pin Overlay
+   ========================================================================== */
+.map-pin-overlay {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6px 8px;
+  gap: 6px;
+  min-width: 88px;
+  height: 27px;
+  background: rgba(0, 86, 167, 0.85098);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.map-pin-overlay:hover {
+  background: rgba(0, 86, 167, 0.98);
+  transform: translate(-50%, -105%) scale(1.04);
+}
+
+.map-pin-overlay .pin-icon {
+  width: 12px;
+  height: 12px;
+  color: #FFFFFF;
+  display: block;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.map-pin-overlay .pin-title {
+  min-width: 58px;
+  height: 15px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 12px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+/* ==========================================================================
+   Exact Figma Floating Controls
+   ========================================================================== */
+.controls, .floating-controls {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 12px;
+  position: absolute;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  height: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  background: rgba(246, 246, 246, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  flex: none;
+  order: 2;
+  flex-grow: 0;
+  z-index: 10;
+  white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+.zoom-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 4px;
+  width: 60px;
+  height: 28px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.zoom-btn {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 86, 167, 0.109804);
+  border: 1px solid rgba(0, 86, 167, 0.164706);
+  border-radius: 16px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 19px;
+  color: #0056A7;
+  cursor: pointer;
+  flex: none;
+  transition: all 0.15s ease;
+}
+
+.zoom-btn:hover {
+  background: #0056A7;
+  color: #FFFFFF;
+}
+
+.control-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(0, 0, 0, 0.12);
+  border: none;
+  transform: none;
+  flex: none;
+  margin: 0 2px;
+}
+
+.slider-control, .slider-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 8px;
+  width: auto;
+  height: 24px;
+  flex: none;
+  order: 2;
+  flex-grow: 0;
+}
+
+.slider-label {
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 13px;
+  color: rgba(0, 0, 0, 0.701961);
+  white-space: nowrap;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.opacity-slider {
+  width: 110px;
+  height: 24px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.opacity-slider:focus {
+  outline: none;
+}
+
+.opacity-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: linear-gradient(to right, #0088FF var(--slider-fill, 100%), rgba(0, 0, 0, 0.08) var(--slider-fill, 100%));
+  border-radius: 100px;
+  border: none;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 16px;
+  background: #FFFFFF;
+  box-shadow: 0px 0.5px 6px rgba(0, 0, 0, 0.12);
+  border-radius: 100px;
+  border: none;
+  margin-top: -5px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.opacity-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.06);
+  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.18);
+}
+
+.opacity-slider::-moz-range-track {
+  height: 6px;
+  background: linear-gradient(to right, #0088FF var(--slider-fill, 100%), rgba(0, 0, 0, 0.08) var(--slider-fill, 100%));
+  border-radius: 100px;
+  border: none;
+}
+
+.opacity-slider::-moz-range-thumb {
+  width: 20px;
+  height: 16px;
+  background: #FFFFFF;
+  box-shadow: 0px 0.5px 6px rgba(0, 0, 0, 0.12);
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.opacity-slider::-moz-range-thumb:hover {
+  transform: scale(1.06);
+  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* ==========================================================================
+   Exact Figma Map Zoom Controls (Live Map)
+   ========================================================================== */
+.map-zoom-controls {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  gap: 8px;
+  position: absolute;
+  width: 72px;
+  height: 40px;
+  left: 16px;
+  bottom: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.121569);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  flex: none;
+  order: 4;
+  flex-grow: 0;
+  z-index: 4;
+}
+
+.map-zoom-btn {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 24px;
+  height: 24px;
+  background: #F0F0F0;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  flex: none;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 17px;
+  color: #333333;
+  transition: all 0.15s ease;
+}
+
+.map-zoom-btn:hover {
+  background: #E4E4E4;
+  color: #000000;
+  transform: scale(1.05);
+}
+
+.switch {
+  width: 38px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #aaa;
+  padding: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+.switch span {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.switch.on {
+  background: #0b84ff;
+}
+
+.switch.on span {
+  transform: translateX(16px);
+}
+
+/* ==========================================================================
+   5. Exact Figma AI Assistant Panel (Right Sidebar)
+   ========================================================================== */
+.chat-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ai-title, .chat-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.ai-title .dot, .ai-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+}
+
+.ai-title button, .reset-btn {
+  margin-left: auto;
+  border: 0;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 4px 8px;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ai-title button:hover, .reset-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text);
+}
+
+.chat-feed {
+  flex: 1;
+  min-height: 0;
+  padding: 6px 4px 6px 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Custom Slim Scrollbars */
+.chat-feed::-webkit-scrollbar,
+.timeline::-webkit-scrollbar,
+.location-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-feed::-webkit-scrollbar-track,
+.timeline::-webkit-scrollbar-track,
+.location-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-feed::-webkit-scrollbar-thumb,
+.timeline::-webkit-scrollbar-thumb,
+.location-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 86, 167, 0.18);
+  border-radius: 4px;
+}
+
+.chat-feed::-webkit-scrollbar-thumb:hover,
+.timeline::-webkit-scrollbar-thumb:hover,
+.location-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 86, 167, 0.4);
+}
+
+.bubble-row {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.bubble-row.user, .user-row {
+  justify-content: flex-end;
+}
+
+.bubble {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 16px;
+  font-family: var(--font-family);
+}
+
+.bubble.user, .user-bubble {
+  width: 240px;
+  max-width: 90%;
+  background: rgba(0, 86, 167, 0.1);
+  border: 1px solid rgba(0, 86, 167, 0.25);
+  color: var(--blue);
+  border-bottom-right-radius: 2px;
+}
+
+.bubble.ai, .ai-bubble {
+  width: 248px;
+  max-width: 90%;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom-left-radius: 2px;
+  color: var(--text);
+}
+
+.bubble p {
+  margin: 0;
+}
+
+.bubble time {
+  display: block;
+  margin-top: 4px;
+  text-align: right;
+  font-size: 9px;
+  line-height: normal;
+  color: rgba(0, 86, 167, 0.5);
+}
+
+.ai-bubble small, .bubble.ai time {
+  display: block;
+  margin-top: 6px;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 9px;
+  line-height: normal;
+  text-align: left;
+}
+
+.details, .bubble-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: normal;
+  color: #000000;
+}
+
+.details span, .bubble-details span {
+  color: #000000;
+}
+
+.details span:first-child, .metric-change {
+  color: #000000;
+}
+
+.details span:last-child, .metric-confidence {
+  color: #000000;
+}
+
+/* Action Chips */
+.actions h2, .actions-section h4 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  flex: none;
+}
+
+.chips, .chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex: none;
+}
+
+.chips button, .chips-grid button, .chip-btn {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+  color: #000000;
+  padding: 6px 10px;
+  border-radius: 32px;
+  font-size: 11px;
+  font-weight: 590;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chips button:hover, .chips-grid button:hover, .chip-btn:hover {
+  background: #000000;
+  color: white;
+  border-color: #000000;
+}
+
+/* ==========================================================================
+   Exact Figma AI Assistant Chat Input Bar
+   ========================================================================== */
+.chat-input, .chat-input-form, .chat-input-bar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 6px 0px 12px;
+  gap: 8px;
+  width: 100%;
+  max-width: 288px;
+  height: 40px;
+  min-height: 40px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.0705882);
+  border-radius: 20px;
+  flex: none;
+  order: 3;
+  align-self: stretch;
+  flex-grow: 0;
+  margin-top: auto;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ai-agent-chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 288px;
+  margin-top: auto;
+  flex: none;
+}
+
+.live-map-chat-bar {
+  margin-top: 0;
+  width: 100%;
+}
+
+.chat-input-form:focus-within,
+.chat-input-bar:focus-within {
+  background: #FFFFFF;
+  border-color: rgba(0, 86, 167, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 86, 167, 0.06);
+  outline: none;
+}
+
+.beta-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 0 4px;
+  font-family: var(--font-family);
+  font-size: 9px;
+  line-height: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  text-align: left;
+  user-select: none;
+}
+
+.beta-disclaimer svg {
+  width: 11px;
+  height: 11px;
+  color: #E67E22;
+  flex: 0 0 11px;
+}
+
+.chat-input input,
+.chat-input-form input,
+.chat-input-field {
+  width: 100%;
+  height: 14px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+}
+
+.chat-input input::placeholder,
+.chat-input-form input::placeholder,
+.chat-input-field::placeholder {
+  color: rgba(0, 0, 0, 0.301961);
+}
+
+.send-icon-btn,
+.chat-send-btn {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: #0056A7;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin-left: auto;
+  transition: all 0.15s ease;
+}
+
+.send-icon-btn:hover:not(:disabled),
+.chat-send-btn:hover:not(:disabled) {
+  background: #00458a;
+  transform: scale(1.05);
+}
+
+.send-icon-btn:active:not(:disabled),
+.chat-send-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.send-icon-btn:disabled,
+.chat-send-btn:disabled {
+  opacity: 0.75;
+  background: #0056A7;
+  cursor: default;
+}
+
+.arrow-up {
+  width: 12px;
+  height: 12px;
+  display: block;
+  flex: none;
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   6. Exact Figma Live Map Selection Elements
+   ========================================================================== */
+.location-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  padding-right: 2px;
+  box-sizing: border-box;
+}
+
+.location-list::-webkit-scrollbar {
+  width: 4px;
+  height: 0px;
+}
+
+.location-list::-webkit-scrollbar-horizontal {
+  display: none !important;
+  height: 0px !important;
+}
+
+.location-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+
+.location-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.location-row:hover {
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.location-row.selected {
+  background: rgba(0, 86, 167, 0.08);
+  border-color: rgba(0, 86, 167, 0.25);
+}
+
+.location-row strong {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.location-row.selected strong {
+  color: #000000;
+}
+
+.location-row small {
+  display: block;
+  margin-top: 2px;
+  font-size: 9.5px;
+  color: var(--text-muted);
+}
+
+.location-pin-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--blue);
+  flex: 0 0 14px;
+}
+
+/* ==========================================================================
+   Exact Figma Coordinates Input Section
+   ========================================================================== */
+.coords-input-section {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 10px;
+  width: 100%;
+  max-width: 248px;
+  height: auto;
+  flex: none;
+  order: 2;
+  align-self: stretch;
+  flex-grow: 0;
+  margin-top: auto;
+  margin-bottom: 0px;
+  padding-top: 12px;
+  padding-bottom: 0px;
+  border-top: 1px solid var(--border-line);
+}
+
+.coords-input-title {
+  width: 248px;
+  height: 13px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 13px;
+  color: rgba(0, 0, 0, 0.501961);
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.fields-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 8px;
+  width: 248px;
+  height: 39px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.input-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 4px;
+  width: 120px;
+  height: 39px;
+  flex: none;
+  flex-grow: 1;
+}
+
+.coord-label {
+  width: 120px;
+  height: 11px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 590;
+  font-size: 9px;
+  line-height: 11px;
+  color: rgba(0, 0, 0, 0.501961);
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.text-field-box,
+.combo-box-coord {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 2px 2px 2px 0px;
+  isolation: isolate;
+  position: relative;
+  width: 100%;
+  max-width: 120px;
+  height: 24px;
+  background: #FFFFFF;
+  background-blend-mode: multiply;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.text-field-box:focus-within,
+.combo-box-coord:focus-within {
+  box-shadow: 0px 0px 0px 1.5px rgba(0, 86, 167, 0.35);
+}
+
+.coord-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 510;
+  font-size: 13px;
+  line-height: 16px;
+  color: rgba(0, 0, 0, 0.85);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0px 28px 0px 8px;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  z-index: 1;
+}
+
+.coord-input::-webkit-outer-spin-button,
+.coord-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.coord-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.combo-box-btn {
+  box-sizing: border-box;
+  width: 24px;
+  height: 20px;
+  border-radius: 4.5px;
+  background: rgba(0, 0, 0, 0.08);
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  position: relative;
+  pointer-events: none;
+  user-select: none;
+  flex: none;
+}
+
+/* ==========================================================================
+   Exact Figma Liquid Glass Button (Location Search & AI Agent Asking)
+   ========================================================================== */
+.coord-btn-container,
+.ai-agent-btn-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  width: 100%;
+  max-width: 288px;
+  height: 44px;
+  position: relative;
+  border-radius: 9999px;
+  flex: none;
+  order: 2;
+  align-self: stretch;
+  flex-grow: 0;
+  margin-top: 10px;
+  margin-bottom: 0px;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.coord-search-btn,
+.ai-agent-ask-btn {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  background: #0088FF;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  box-shadow: inset 0px 1.5px 2px rgba(255, 255, 255, 0.45),
+              inset 0px -1.5px 2px rgba(0, 80, 180, 0.25),
+              0px 4px 14px rgba(0, 136, 255, 0.35);
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+.coord-search-btn:hover:not(:disabled),
+.ai-agent-ask-btn:hover:not(:disabled) {
+  background: #1a94ff;
+  transform: translateY(-1px);
+  box-shadow: inset 0px 1.5px 2px rgba(255, 255, 255, 0.55),
+              inset 0px -1.5px 2px rgba(0, 80, 180, 0.25),
+              0px 6px 18px rgba(0, 136, 255, 0.45);
+}
+
+.coord-search-btn:active:not(:disabled),
+.ai-agent-ask-btn:active:not(:disabled) {
+  transform: scale(0.98);
+  box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.3),
+              0px 2px 6px rgba(0, 136, 255, 0.25);
+}
+
+.coord-search-btn:disabled,
+.ai-agent-ask-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.coord-btn-symbol,
+.ai-agent-symbol {
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.primary-btn {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 86, 167, 0.3);
+  color: white;
+  background: linear-gradient(rgba(0, 86, 167, 0.96), rgba(0, 75, 148, 0.96));
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.primary-btn:hover {
+  background: linear-gradient(rgba(0, 96, 187, 0.96), rgba(0, 86, 167, 0.96));
+  transform: translateY(-1px);
+}
+
+.primary-btn.full {
+  width: 100%;
+}
+
+/* Region Details */
+.details-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  font-size: 11px;
+  margin-top: 12px;
+}
+
+.details-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.details-row span {
+  color: var(--text-muted);
+}
+
+.details-row strong {
+  color: #000;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Telemetry Analysis Card in Region Details */
+.telemetry-result-card {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 86, 167, 0.08);
+  border: 1px solid rgba(0, 86, 167, 0.18);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+  animation: fadeIn 0.25s ease;
+}
+
+.telemetry-result-card.loading {
+  background: rgba(0, 86, 167, 0.04);
+  border-style: dashed;
+}
+
+.telemetry-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.telemetry-card-head h4 {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.telemetry-card-head .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex: none;
+}
+
+.telemetry-card-head .dot.pulse {
+  animation: pulse-step 1.2s infinite;
+}
+
+.telemetry-card-head .dot.success {
+  background: var(--green);
+}
+
+.telemetry-result-card p {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 11px;
+  line-height: 15px;
+  color: rgba(0, 0, 0, 0.82);
+}
+
+.telemetry-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(0, 86, 167, 0.12);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Exact Figma Available Datasets & Switches
+   ========================================================================== */
+.available-datasets-title {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: 13px;
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 13px;
+  color: rgba(0, 0, 0, 0.501961);
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+
+.dataset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 0 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dataset-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  width: 100%;
+  max-width: 100%;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.419608);
+  border-radius: 16px;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+}
+
+.dataset-label {
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: 590;
+  font-size: 12px;
+  line-height: 14px;
+  color: #000000;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.dataset-switch {
+  box-sizing: border-box;
+  width: 54px;
+  height: 24px;
+  border-radius: 1000px;
+  background: rgba(0, 0, 0, 0.15);
+  position: relative;
+  cursor: pointer;
+  border: none;
+  padding: 2px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  transition: background 0.2s ease;
+}
+
+.dataset-switch.on {
+  background: #0088FF;
+}
+
+.dataset-switch .knob {
+  position: absolute;
+  width: 32px;
+  height: 20px;
+  top: 2px;
+  left: 2px;
+  background: #FFFFFF;
+  box-shadow: 0px 3px 36px rgba(0, 0, 0, 0.05);
+  border-radius: 100px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+.dataset-switch.on .knob {
+  transform: translateX(18px);
+}
+
+/* Upload input wraps */
+.upload-btn-wrap {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-btn-wrap input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Toast */
+.toast-msg {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.82);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  transition: 0.2s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toast-msg.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ==========================================================================
+   Login Button in Navbar & Login Modal
+   ========================================================================== */
+.nav-login-btn {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px 4px 6px;
+  height: 32px;
+  background: #18181B;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 590;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  isolation: isolate;
+}
+
+.login-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.16) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: loginShimmerSweep 4.5s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes loginShimmerSweep {
+  0%, 75% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+.login-user-icon-wrap {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 2;
+  transition: background 0.2s ease;
+}
+
+.login-icon {
+  width: 11.5px;
+  height: 11.5px;
+  color: #FFFFFF;
+}
+
+.login-btn-text {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 590;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  z-index: 2;
+}
+
+.login-chevron {
+  width: 11px;
+  height: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  z-index: 2;
+}
+
+.nav-login-btn:hover {
+  background: #0056A7;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 86, 167, 0.28);
+  transform: translateY(-1px);
+}
+
+.nav-login-btn:hover .login-user-icon-wrap {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-login-btn:hover .login-chevron {
+  transform: translateX(2px);
+  color: #FFFFFF;
+}
+
+.nav-login-btn:active {
+  transform: translateY(0px) scale(0.97);
+  box-shadow: 0 1px 4px rgba(0, 86, 167, 0.2);
+}
+
+/* Login Modal Backdrop & Card */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 16px;
+  animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.login-modal-card {
+  position: relative;
+  width: 440px;
+  max-width: 100%;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 24px 28px 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.04);
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000000;
+  transform: scale(1.08);
+}
+
+.login-animation-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.login-modal-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.prototype-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 86, 167, 0.08);
+  border: 1px solid rgba(0, 86, 167, 0.18);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-family: var(--font-family);
+  font-size: 10px;
+  font-weight: 700;
+  color: #0056A7;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: #0056A7;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(0, 86, 167, 0.5);
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 86, 167, 0.5);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(0, 86, 167, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 86, 167, 0);
+  }
+}
+
+.login-modal-title {
+  margin: 0 0 8px;
+  font-family: var(--font-family);
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.25;
+}
+
+.login-modal-desc {
+  margin: 0 0 16px;
+  font-family: var(--font-family);
+  font-size: 12.5px;
+  line-height: 18px;
+  color: rgba(0, 0, 0, 0.65);
+  max-width: 360px;
+}
+
+.prototype-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #F8F9FA;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+  text-align: left;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.info-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.info-text {
+  font-family: var(--font-family);
+  font-size: 11px;
+  line-height: 15px;
+  color: rgba(0, 0, 0, 0.72);
+}
+
+.login-modal-actions {
+  width: 100%;
+}
+
+.login-confirm-btn {
+  width: 100%;
+  height: 42px;
+  background: #0056A7;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 21px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 86, 167, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-confirm-btn:hover {
+  background: #00458a;
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 86, 167, 0.35);
+}
+
+.login-confirm-btn:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   7. Comprehensive Responsive Breakpoints (Tablet & Mobile)
+   ========================================================================== */
+@media (max-width: 1080px) {
+  .sidebar-left {
+    width: 240px;
+  }
+  .sidebar-right {
+    width: 280px;
+  }
+  .workspace, .workspace-3col, .workspace-2col {
+    gap: 10px;
+  }
+  .controls, .floating-controls {
+    gap: 8px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 860px) {
+  html, body, #root {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .app-shell {
+    height: auto;
+    min-height: 100vh;
+    padding: 0 8px 16px;
+    overflow: visible;
+  }
+
+  .navbar {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 10px 12px;
+    gap: 8px;
+    align-items: stretch;
+    border-radius: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nav-top-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: auto;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: auto;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    height: auto;
+  }
+
+  .nav-divider-line {
+    display: none;
+  }
+
+  .status-frame {
+    padding: 2px 8px;
+    height: 22px;
+    border-radius: 11px;
+  }
+
+  .status-text {
+    font-size: 10px;
+  }
+
+  .nav-tabs {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 18px;
+    padding: 2px;
+    box-sizing: border-box;
+    position: relative;
+    gap: 2px;
+    justify-content: space-between;
+  }
+
+  .nav-tab-slider {
+    height: 32px;
+    top: 2px;
+    border-radius: 16px;
+    background: #FFFFFF;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12);
+    border: none;
+  }
+
+  .nav-tab {
+    flex: 1;
+    min-width: 0;
+    height: 32px;
+    padding: 0 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-align: center;
+    justify-content: center;
+    border-radius: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .nav-tab.active {
+    color: #000000;
+  }
+
+  .workspace-container {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .workspace, .workspace-3col, .workspace-2col {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    gap: 12px;
+    overflow: visible;
+  }
+
+  /* Map takes top priority on mobile */
+  .main-map, .main-viewport {
+    order: 1;
+    min-height: 380px;
+    height: 380px;
+    width: 100%;
+  }
+
+  .map-frame {
+    min-height: 380px;
+    height: 380px;
+    width: 100%;
+    border-radius: 14px;
+  }
+
+  .sidebar-left {
+    order: 2;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto;
+    min-height: auto;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .sidebar-right {
+    order: 3;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto;
+    min-height: auto;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .right-content {
+    height: auto;
+    overflow: visible;
+  }
+
+  .chat-feed {
+    max-height: 240px;
+    min-height: 120px;
+  }
+
+  .chat-input, .chat-input-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .ai-agent-chat-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .coord-btn-container, .ai-agent-btn-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .location-list {
+    max-height: 220px;
+  }
+
+  /* Floating controls & badges on mobile */
+  .floating-controls {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100% - 16px);
+    padding: 4px 8px;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    border-radius: 100px;
+  }
+
+  .opacity-slider {
+    width: 72px;
+  }
+
+  .map-style-switcher-bar {
+    top: 10px;
+    max-width: calc(100% - 20px);
+    padding: 2px;
+    overflow-x: auto;
+  }
+
+  .map-style-pill {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .draw-tool-badge, .draw-tool {
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    font-size: 10px;
+    max-width: 58%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .coordinates-badge {
+    bottom: 54px;
+    right: 10px;
+    padding: 4px 8px;
+    font-size: 9.5px;
+  }
+
+  .split-pane-header {
+    font-size: 9.5px;
+    padding: 3px 8px;
+    top: 8px;
+  }
+
+  .split-pane-header.t1-header {
+    left: 8px;
+    right: auto;
+  }
+
+  .split-pane-header.t2-header {
+    right: 8px;
+    left: auto;
+  }
+
+  .link-sync-btn {
+    font-size: 9px;
+    padding: 3px 8px;
+    top: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .tab-full {
+    display: none !important;
+  }
+
+  .tab-short {
+    display: inline !important;
+  }
+
+  .app-shell {
+    padding: 0 6px 12px;
+  }
+
+  .brand-title {
+    font-size: 13.5px;
+  }
+
+  .navbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .nav-tabs {
+    height: 32px;
+  }
+
+  .nav-tab-slider {
+    height: 28px;
+  }
+
+  .nav-tab {
+    height: 28px;
+    font-size: 10.5px;
+    padding: 0 2px;
+  }
+
+  .main-map, .main-viewport, .map-frame {
+    min-height: 320px;
+    height: 320px;
+  }
+
+  .floating-controls {
+    padding: 3px 6px;
+    gap: 4px;
+  }
+
+  .slider-label {
+    display: none;
+  }
+
+  .opacity-slider {
+    width: 65px;
+  }
+
+  .sidebar-left, .sidebar-right {
+    padding: 12px;
+  }
+
+  .chips, .chips-grid {
+    gap: 4px;
+  }
+
+  .chips button, .chips-grid button, .chip-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
