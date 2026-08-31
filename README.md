@@ -1,140 +1,268 @@
-# 🛰️ ISRO SatQuery AI — Next-Gen Multimodal Geospatial VQA & Change Detection
+# 🛰️ ISRO SatQuery AI — Agentic Multimodal Geospatial Intelligence
+
+<div align="center">
+
+![SatQuery AI Hero Banner](./docs/hero_banner.jpg)
+
+### **Next-Generation Remote Sensing Visual Question Answering (VQA) & Temporal Change Detection**
+*Smart India Hackathon 2026 (SIH26167) — ISRO Space Technology Track*
+
+---
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org)
 [![Vite](https://img.shields.io/badge/Vite-8.2.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
 [![Mapbox GL](https://img.shields.io/badge/Mapbox_GL_JS-v3.18-000000?style=for-the-badge&logo=mapbox&logoColor=white)](https://www.mapbox.com)
-[![Vercel](https://img.shields.io/badge/Vercel-Fullstack_Ready-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Agentic_Router-FF6B6B?style=for-the-badge&logo=python&logoColor=white)](https://langchain.ai)
+[![Vercel](https://img.shields.io/badge/Vercel-Fullstack_Deploy-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-**SatQuery AI** is an advanced agentic, multimodal remote-sensing AI platform designed for the **Smart India Hackathon (SIH26167 - ISRO / Space Technology Track)**. It bridges high-resolution satellite Earth Observation (EO) data with vision-language foundation models and computer vision pipelines to enable natural language visual question answering (VQA), bi-temporal change detection, and optical-SAR sensor fusion.
+</div>
+
+---
+
+## 📌 Executive Summary
+
+**SatQuery AI** is an end-to-end agentic Earth Observation platform that bridges high-resolution satellite imagery (Optical RGB, Near-Infrared NIR, Short-Wave Infrared SWIR, and Synthetic Aperture Radar SAR) with advanced Vision-Language Models (VLMs). 
+
+Rather than treating geospatial imagery as simple RGB crops, SatQuery AI features an **Agentic Router**, **Specialized Vision Engines**, and a **Strict Evidence Engine (Hallucination Firewall)** to ensure mathematical and spatial grounding for defense, disaster response, and urban planning.
+
+---
+
+## 📸 Platform Showcase
+
+<div align="center">
+
+![SatQuery AI UI Showcase](./docs/ui_showcase.jpg)
+*Figure: Dual Split Synchronized Change Detection, Real-time Vector Masks, and Multimodal AI Chat Reasoning Trace on Desktop and Mobile.*
+
+</div>
 
 ---
 
 ## 📑 Table of Contents
-1. [System Architecture](#-system-architecture)
-2. [Frontend Architecture & UI Design System](#-frontend-architecture--ui-design-system)
-3. [Backend Pipeline & Agentic Core](#-backend-pipeline--agentic-core)
-4. [Machine Learning Redefinition & Training Strategy](#-machine-learning-redefinition--training-strategy)
-5. [Frontend-Backend Integration & Communication](#-frontend-backend-integration--communication)
-6. [Known Errors, Edge Cases & Hallucination Mitigation](#-known-errors-edge-cases--hallucination-mitigation)
-7. [API Specification & Endpoints](#-api-specification--endpoints)
-8. [Getting Started & Local Development](#-getting-started--local-development)
-9. [Vercel Fullstack Deployment Guide](#-vercel-fullstack-deployment-guide)
-10. [Repository Structure](#-repository-structure)
+
+- [🛰️ ISRO SatQuery AI — Agentic Multimodal Geospatial Intelligence](#️-isro-satquery-ai--agentic-multimodal-geospatial-intelligence)
+  - [📌 Executive Summary](#-executive-summary)
+  - [📸 Platform Showcase](#-platform-showcase)
+  - [📑 Table of Contents](#-table-of-contents)
+  - [🏛️ System Architecture \& Dataflow](#️-system-architecture--dataflow)
+  - [🧠 Core Capabilities](#-core-capabilities)
+    - [1. Single-Image Geospatial VQA](#1-single-image-geospatial-vqa)
+    - [2. Bi-Temporal Change Detection](#2-bi-temporal-change-detection)
+    - [3. Optical-SAR Cross-Modal Sensor Fusion](#3-optical-sar-cross-modal-sensor-fusion)
+  - [📊 Interactive Flowcharts](#-interactive-flowcharts)
+    - [A. End-to-End Multimodal Execution Flow](#a-end-to-end-multimodal-execution-flow)
+    - [B. Bi-Temporal Change Detection Pipeline](#b-bi-temporal-change-detection-pipeline)
+    - [C. Optical-SAR Cross-Attention Fusion Flow](#c-optical-sar-cross-attention-fusion-flow)
+  - [🎨 Frontend Architecture \& Design System](#-frontend-architecture--design-system)
+  - [🛠️ Technology Stack](#️-technology-stack)
+  - [🔬 Machine Learning Training \& Production Roadmap](#-machine-learning-training--production-roadmap)
+  - [🛡️ Security \& Privacy Hardening](#️-security--privacy-hardening)
+  - [📡 API Specification \& cURL Examples](#-api-specification--curl-examples)
+    - [1. `POST /api/query` (Multimodal Query Execution)](#1-post-apiquery-multimodal-query-execution)
+    - [2. `POST /api/query_by_location` (Geocoding \& Catalog Retrieval)](#2-post-apiquery_by_location-geocoding--catalog-retrieval)
+    - [3. `GET /health` (System Status)](#3-get-health-system-status)
+  - [🧪 Test Suite \& Verification Matrix](#-test-suite--verification-matrix)
+  - [🚀 Getting Started \& Quickstart](#-getting-started--quickstart)
+    - [Local Development](#local-development)
+    - [1-Click Vercel Deployment](#1-click-vercel-deployment)
+  - [📂 Directory Tree](#-directory-tree)
+  - [👥 Team \& Hackathon Acknowledgments](#-team--hackathon-acknowledgments)
 
 ---
 
-## 🏛️ System Architecture
+## 🏛️ System Architecture & Dataflow
 
-SatQuery AI uses a modular, decoupled architecture where user queries pass through an **Agentic Router**, get processed by specialized **Vision Engines**, pass through a strict **Evidence Engine (Hallucination Firewall)**, and are synthesized by an **LLM Synthesis Layer** with auditable visual traces.
+SatQuery AI's architecture enforces strict separation of concerns across presentation, routing, computer vision computation, and natural language synthesis:
 
 ```
-                               ┌───────────────────────────────────────────────────────────┐
-                               │                    React 18 Frontend                      │
-                               │  Mapbox GL High-Res Satellites • Lottie • Glassmorphic UI  │
-                               └─────────────────────────────┬─────────────────────────────┘
-                                                             │
-                                        POST /api/query or /api/query_by_location
-                                                             │
-                                                             ▼
-                               ┌───────────────────────────────────────────────────────────┐
-                               │                   FastAPI / Serverless                    │
-                               │                (main.py / api/index.py)                   │
-                               └─────────────────────────────┬─────────────────────────────┘
-                                                             │
-                                                             ▼
-                               ┌───────────────────────────────────────────────────────────┐
-                               │                      Agentic Router                       │
-                               │            (Intent Classification & Dispatch)             │
-                               └──────┬──────────────────────┼──────────────────────┬──────┘
-                                      │                      │                      │
-                   Single Image Scene │     Bi-Temporal Pair │     Multi-Sensor Pair│
-                                      ▼                      ▼                      ▼
-                          ┌──────────────────────┐┌──────────────────────┐┌──────────────────────┐
-                          │ Single-Image Engine  ││    Change Engine     ││    Fusion Engine     │
-                          │   (ViT / Qwen-VL)    ││   (Siamese / SSIM)   ││ (Cross-Attention)    │
-                          └──────────┬───────────┘└──────────┬───────────┘└──────────┬───────────┘
-                                     │                       │                       │
-                                     └───────────────────────┼───────────────────────┘
-                                                             ▼
-                               ┌───────────────────────────────────────────────────────────┐
-                               │               Evidence Engine & Firewall                  │
-                               │          (Locked Evidence JSON + Numerical Facts)         │
-                               └─────────────────────────────┬─────────────────────────────┘
-                                                             │
-                                                             ▼
-                               ┌───────────────────────────────────────────────────────────┐
-                               │                   LLM Synthesis Layer                     │
-                               │               (Grounded Answer Generation)                │
-                               └─────────────────────────────┬─────────────────────────────┘
-                                                             │
-                                                             ▼
-                               ┌───────────────────────────────────────────────────────────┐
-                               │              Structured Execution Trace                   │
-                               │          Answer + Evidence Details + Confidence           │
-                               └───────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 PRESENTATION LAYER                                       │
+│    React 18 + Mapbox GL JS • Glassmorphic Dark UI • Lottie Player • Responsive 2-Tier    │
+└────────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                             │ HTTP POST (Multipart Form-Data)
+                                             ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   API GATEWAY                                            │
+│    FastAPI (0.115.0) • Uvicorn • Serverless Python Edge (api/index.py) • Strict CORS    │
+└────────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                             │
+                                             ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                             AGENTIC ROUTER (LangGraph)                                   │
+│    Intent Scoring • Modality Detection (RGB/NIR/SAR) • Image Count • Execution Trace    │
+└──────────────────────┬─────────────────────┼──────────────────────┬──────────────────────┘
+                       │                     │                      │
+       Single Scene    │   Bi-Temporal Pair  │     Cross-Modal Pair │
+                       ▼                     ▼                      ▼
+┌──────────────────────────────┐┌──────────────────────────────┐┌───────────────────────────┐
+│     Single-Image Engine      ││        Change Engine         ││       Fusion Engine       │
+│  - Spatial Grounding (BBox)  ││  - Siamese Difference CNN    ││  - Optical RGB (S2/LISS)  │
+│  - Object Counting / Density ││  - SSIM Delta Thresholding   ││  - SAR Radar (RISAT/S1)   │
+│  - Land-Cover Classification ││  - Change Vector Mask (PNG)  ││  - Cloud-Penetrating Fused│
+└──────────────┬───────────────┘└────────────┬─────────────────┘└─────────────┬─────────────┘
+               │                             │                                │
+               └─────────────────────────────┼────────────────────────────────┘
+                                             │ Raw CV Tensors & Spatial Bounds
+                                             ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                         EVIDENCE ENGINE (Hallucination Firewall)                         │
+│    Converts raw CV output into a locked, immutable JSON object. Prevents LLM fabrications.│
+└────────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                             │ Locked Evidence JSON + Context
+                                             ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                                  LLM SYNTHESIS LAYER                                     │
+│    Grounded Natural Language Response Generation (Claude 3.5 Sonnet / Qwen-VL / Local)   │
+└────────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                             │
+                                             ▼
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                             AUDITABLE QUERY RESPONSE                                     │
+│    Synthesized Answer + Locked Evidence Facts + Step-by-Step Execution Trace + Overlays   │
+└──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🎨 Frontend Architecture & UI Design System
+## 🧠 Core Capabilities
 
-The frontend is built using **React 18 + Vite** with a bespoke **Apple / Figma Glassmorphic Design System** (`index.css`):
+### 1. Single-Image Geospatial VQA
+- **Visual Question Answering**: Natural language questions about satellite scenes (e.g., *"How many cargo vessels and storage tanks are present in this port sector?"*).
+- **Spatial Grounding**: Extracts bounding boxes (`[ymin, xmin, ymax, xmax]`) for identified structures.
+- **Preset Telemetry**: Instant viewport jump (`flyTo`) for key Indian strategic corridors (Delhi NCR, Mumbai Port, Bengaluru Tech Corridor, Chilika Wetland, Punjab Farmlands).
 
-### 🌟 Key UI/UX Highlights:
-1. **Interactive Dual-Mapbox Change Detection (`ChangeDetection.jsx`)**:
-   - Two synchronized high-resolution satellite maps (T1 Baseline vs T2 Target).
-   - **Linked Pan/Zoom Toggle**: One-click lock/unlock button with vector SVG chain links.
-   - **Top-Docked Metadata Headers**: T1 Baseline is anchored to the top-left (`left: 14px`) and T2 Target to the top-right (`right: 14px`), preventing any visual overlap with the center synchronization button.
-   - **Dynamic Difference Overlay**: Real-time opacity slider (0% to 100%) and toggleable change vector masks.
+### 2. Bi-Temporal Change Detection
+- **Dual Synchronized Mapbox Viewports**: Compare baseline T1 (e.g. Pre-Flood/2020) against target T2 (e.g. Post-Flood/2024).
+- **Linked Pan/Zoom Toggle**: Synchronized panning and zoom navigation with one-click independent view unlock.
+- **Vector Change Overlays**: Real-time visual delta mask with variable opacity slider (0% to 100%).
+- **Quantitative Metrics**: Instant measurement of land-use transformation, building growth, and flood inundation extent (in km²).
 
-2. **Single-Image Geospatial VQA (`SingleImageVQA.jsx`)**:
-   - Smooth Mapbox viewport animations (`flyTo`) for preset Indian regions (Delhi NCR, Mumbai Coast, Bengaluru Corridor, Chilika Lake, Punjab Farmlands).
-   - Natural language search bar and manual Coordinate Quick Jump (`lat`/`lng`).
-   - Custom GeoTIFF / PNG / JPEG drag-and-drop file uploader.
-
-3. **Live Satellite Explorer (`LiveMapSelection.jsx`)**:
-   - Multi-layer Satellite Base Switcher (Satellite High-Res, Street, Dark, Outdoors) with dynamic sliding capsule pill animation.
-   - **Exact Figma Coordinate Combo Boxes**: 24px height, 6px border radius, multiply blend-mode border, and dedicated `°N` / `°E` indicator buttons.
-
-4. **Lottie Vector Login Modal (`LoginModal.jsx` & `Navbar.jsx`)**:
-   - Ultra-sleek **Obsidian Zinc (`#18181B`) & ISRO Blue (`#0056A7`) Sign In button** with natural specular light glint and interactive hover micro-animations.
-   - 60fps vector Lottie animation (`Login.json`) rendered via lightweight player.
-   - Live pulsating prototype phase notice informing users of upcoming features and roadmap status.
-
-5. **2-Tier Mobile & Tablet Responsiveness**:
-   - Dynamic 2-tier navigation bar on screens `< 840px` with segmented slider pill controls.
-   - Smart viewport reordering (`order: 1` on maps) so satellite imagery is immediately visible on top of sidebars on mobile devices.
+### 3. Optical-SAR Cross-Modal Sensor Fusion
+- **All-Weather Cloud Penetration**: Fuses optical RGB imagery with Synthetic Aperture Radar (SAR C-Band / L-Band).
+- **Adaptive Weighting**: Dynamically up-weights the SAR sensor branch when cloud cover exceeds 40%, enabling continuous disaster monitoring through monsoons and smoke.
 
 ---
 
-## 🧠 Backend Pipeline & Agentic Core
+## 📊 Interactive Flowcharts
 
-The backend is built on **FastAPI** with modular engines:
+### A. End-to-End Multimodal Execution Flow
 
-### 1. Agentic Router (`backend/core/router.py`)
-- Analyzes incoming requests (image count, sensor modalities, question intent keywords).
-- Automatically routes queries to:
-  - `TaskType.SINGLE_IMAGE_VQA` (e.g. object counts, infrastructure identification, land-use classification).
-  - `TaskType.CHANGE_DETECTION` (e.g. flood inundation extent, deforestation delta, urban expansion).
-  - `TaskType.CROSS_MODAL_FUSION` (e.g. cloud-penetrating SAR radar + optical RGB fusion).
+```mermaid
+graph TD
+    classDef client fill:#001f3f,stroke:#0088FF,stroke-width:2px,color:#fff;
+    classDef gateway fill:#18181B,stroke:#3B82F6,stroke-width:2px,color:#fff;
+    classDef router fill:#1E293B,stroke:#10B981,stroke-width:2px,color:#fff;
+    classDef engine fill:#0F172A,stroke:#F59E0B,stroke-width:2px,color:#fff;
+    classDef evidence fill:#31103F,stroke:#EC4899,stroke-width:2px,color:#fff;
+    classDef llm fill:#064E3B,stroke:#10B981,stroke-width:2px,color:#fff;
 
-### 2. Evidence Engine / Hallucination Firewall (`backend/core/evidence_engine.py`)
-- Vision models output raw bounding boxes, segmentation masks, and pixel deltas.
-- The **Evidence Engine** converts raw computer vision tensors into a **Locked Evidence JSON Object**.
-- The LLM is strictly prohibited from inventing numbers or facts; it can only explain facts verified within the evidence object.
+    User([User Prompt & Image Files]):::client --> Frontend[React 18 Mapbox UI]:::client
+    Frontend -->|POST /api/query| API[FastAPI Gateway]:::gateway
+    API --> Ingest[Ingestion & CRS Reprojection]:::gateway
+    Ingest --> Router{LangGraph Router}:::router
 
-### 3. Location Resolver & Geocoding (`backend/ingestion/location_resolver.py`)
-- Geocodes Indian districts, cities, and landmarks into precise WGS84 bounding boxes.
-- In mock/offline mode, generates deterministic synthetic GeoTIFF rasters with geospatial CRS metadata.
-- Prepares automated catalog queries for Sentinel-2, Landsat-8, and ISRO Bhoonidhi APIs.
+    Router -->|1 Image: Optical| VQA[Single-Image Engine]:::engine
+    Router -->|2 Images: Optical| Change[Bi-Temporal Change Engine]:::engine
+    Router -->|Optical + SAR| Fusion[Cross-Modal Fusion Engine]:::engine
+
+    VQA --> Raw[Raw Computer Vision Output]:::engine
+    Change --> Raw
+    Fusion --> Raw
+
+    Raw --> Firewall[Evidence Engine: Hallucination Firewall]:::evidence
+    Firewall -->|Locked Facts JSON| Synthesis[LLM Synthesis: Claude / Qwen]:::llm
+    Synthesis --> Response([Auditable Answer + Trace + Overlays]):::client
+```
 
 ---
 
-## 🔬 Machine Learning Redefinition & Training Strategy
+### B. Bi-Temporal Change Detection Pipeline
 
-SatQuery AI is designed with a **two-phase machine learning lifecycle**:
+```mermaid
+graph LR
+    classDef step fill:#1E293B,stroke:#38BDF8,stroke-width:2px,color:#fff;
+    classDef math fill:#0F172A,stroke:#A855F7,stroke-width:2px,color:#fff;
+    classDef out fill:#064E3B,stroke:#22C55E,stroke-width:2px,color:#fff;
+
+    T1[T1 Baseline Image]:::step --> Align[Radiometric & Geometric Alignment]:::step
+    T2[T2 Target Image]:::step --> Align
+
+    Align --> Siamese[Siamese Feature Extraction]:::math
+    Siamese --> CVA[Change Vector Analysis - CVA]:::math
+    Siamese --> SSIM[Structural Similarity Index - SSIM]:::math
+
+    CVA --> DeltaMap[Pixel Delta Probability Map]:::math
+    SSIM --> DeltaMap
+
+    DeltaMap --> Thresh[Adaptive Thresholding > 0.35]:::math
+    Thresh --> Mask[Vector Difference Overlay PNG]:::out
+    Thresh --> Metrics[Area Calculation km² & Confidence Score]:::out
+```
+
+---
+
+### C. Optical-SAR Cross-Attention Fusion Flow
+
+```mermaid
+graph TD
+    classDef opt fill:#1E3A8A,stroke:#60A5FA,stroke-width:2px,color:#fff;
+    classDef sar fill:#4C1D95,stroke:#C084FC,stroke-width:2px,color:#fff;
+    classDef fuse fill:#0F766E,stroke:#2DD4BF,stroke-width:2px,color:#fff;
+
+    OptImg[Sentinel-2 / LISS Optical RGB+NIR]:::opt --> OptEncoder[Optical ViT Encoder]:::opt
+    SARImg[RISAT / Sentinel-1 SAR C-Band]:::sar --> SAREncoder[SAR ResNet Encoder]:::sar
+
+    OptEncoder --> CloudCheck{Cloud Cover > 40%?}:::fuse
+    SAREncoder --> CrossAttn[Cross-Modal Attention Fusion Module]:::fuse
+
+    CloudCheck -->|Yes: High Cloud| WeightSAR[Dynamically Up-Weight SAR Channel]:::fuse
+    CloudCheck -->|No: Clear Sky| WeightOpt[Balanced Multi-Spectral Fusion]:::fuse
+
+    WeightSAR --> CrossAttn
+    WeightOpt --> CrossAttn
+
+    CrossAttn --> InvariantEmb[Cloud-Invariant Geospatial Representation]:::fuse
+```
+
+---
+
+## 🎨 Frontend Architecture & Design System
+
+The SatQuery AI interface follows a clean, modern **Apple / Figma Glassmorphic Design System**:
+
+| Component | Key Features & Design System Compliance |
+| :--- | :--- |
+| **`SingleImageVQA.jsx`** | Viewport fly-to animations, coordinate search, GeoTIFF upload, confidence telemetry badge, and dynamic chat drawer. |
+| **`ChangeDetection.jsx`** | Dual Mapbox viewports with linked pan/zoom lock, independent header badges (T1 top-left, T2 top-right), and opacity slider. |
+| **`LiveMapSelection.jsx`** | 4-layer style switcher (Satellite, Street, Dark, Outdoors), exact Figma combo-box coordinates (`°N` / `°E` 24px pills), and AI agent trigger. |
+| **`Navbar.jsx`** | 2-tier responsive navigation, sliding indicator pill, and handcrafted Obsidian/ISRO blue Sign In button with specular light shimmer. |
+| **`LoginModal.jsx`** | 60fps vector Lottie animation (`Login.json`) and pulsating prototype phase roadmap notice. |
+
+---
+
+## 🛠️ Technology Stack
+
+| Category | Technology | Version | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Frontend Framework** | React | `18.3.1` | Declarative UI rendering |
+| **Build Tool** | Vite | `8.2.2` | Fast HMR development and optimized production bundling |
+| **Mapping Engine** | Mapbox GL JS | `3.18.1` | High-resolution satellite raster and vector overlay rendering |
+| **Animation Engine** | Lottie Web | `5.12.2` | 60fps vector animations |
+| **Styling** | Vanilla CSS3 | Custom | Ultra-fast glassmorphism without heavy utility runtime overhead |
+| **Backend Framework** | FastAPI | `0.115.0` | High-concurrency async Python API gateway |
+| **Agentic Framework** | LangGraph / NetworkX | `0.2.0+` | Intent classification, graph-based routing, and trace recording |
+| **Geospatial Processing**| Rasterio / Shapely | `1.3.10` | GeoTIFF CRS reprojection, raster slicing, and polygon operations |
+| **Computer Vision** | PyTorch / scikit-image | `2.0+` | Deep learning models, Siamese CNNs, and SSIM delta calculation |
+| **Cloud Deployment** | Vercel Serverless | Python 3.10 | Edge API routing and automated CI/CD continuous deployment |
+
+---
+
+## 🔬 Machine Learning Training & Production Roadmap
+
+SatQuery AI includes a complete training pipeline to transition from deterministic mock simulation to deep neural network checkpoints:
 
 ```
 ┌───────────────────────────────────────────────────────────┐
@@ -151,155 +279,191 @@ SatQuery AI is designed with a **two-phase machine learning lifecycle**:
 └───────────────────────────────────────────────────────────┘
 ```
 
-### 1. Single-Image VQA (Qwen 2.5-VL / BigEarthNet)
-- **Architecture**: Vision Transformer (ViT) backbone + Language Model decoder.
-- **Training Script**: `backend/training/train_qwen_vl_lora.py`
-- **Dataset**: BigEarthNet, RSVQA (Remote Sensing Visual Question Answering), and ISRO Cartosat-2/3 imagery.
-- **Activation**: Set `VQA_MOCK_MODE=False` and `VQA_MODEL_PATH=/path/to/checkpoint` in `.env`.
-
-### 2. Bi-Temporal Change Detection (Siamese ResNet / VisTA)
-- **Architecture**: Dual-branch Siamese network with difference feature pyramid and Structural Similarity (SSIM) delta thresholding.
-- **Dataset**: CDVQA (Change Detection Visual Question Answering), LEVIR-CD, and WHU-CD.
-- **Activation**: Set `CHANGE_MODEL_PATH=/path/to/checkpoint` in `.env`.
-
-### 3. Optical-SAR Cross-Modal Fusion
-- **Architecture**: Dual-encoder cross-attention mechanism aligning Optical RGB bands (Sentinel-2 / LISS-IV) with SAR C-band / L-band Radar (RISAT / Sentinel-1).
-- **Activation**: Set `FUSION_MODEL_PATH=/path/to/checkpoint` in `.env`.
+1. **Qwen 2.5-VL LoRA Fine-Tuning (`backend/training/train_qwen_vl_lora.py`)**:
+   - Fine-tune Qwen 2.5-VL / BigEarthNet using Low-Rank Adaptation (LoRA) on satellite VQA datasets.
+   - Activate by setting `VQA_MOCK_MODE=False` and `VQA_MODEL_PATH=/path/to/checkpoint` in `backend/.env`.
+2. **Siamese ResNet / VisTA Change Detection**:
+   - Train dual-branch CNN on CDVQA and LEVIR-CD benchmark datasets.
+   - Point `CHANGE_MODEL_PATH` to the trained weights file.
+3. **ISRO Bhoonidhi Live Data Ingestion (`backend/data_access/bhoonidhi_client.py`)**:
+   - Connect authenticated credentials (`BHOONIDHI_USER`, `BHOONIDHI_PASSWORD`) to download live Cartosat-2S, LISS-IV, and RISAT scenes directly from NRSC.
 
 ---
 
-## 🔗 Frontend-Backend Integration & Communication
+## 🛡️ Security & Privacy Hardening
 
-### Dynamic Base URL Resolution (`frontend/src/api.js`)
-```javascript
-const API_BASE = import.meta.env.VITE_BACKEND_URL 
-  ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "") 
-  : "";
+- **Zero Hardcoded Secrets**: Mapbox tokens are strictly read from `import.meta.env.VITE_MAPBOX_TOKEN`. All git-tracked files are verified with 0 exposed token strings.
+- **Strict CORS Origin Isolation**: Replaced open wildcard CORS with configurable `ALLOWED_ORIGINS` (supporting `http://localhost:5173`, `http://localhost:3000`, and `https://*.vercel.app` preview deployments).
+- **Public Storage Boundary Isolation**: Mounted exclusively `./storage/public` to prevent unauthorized HTTP access to internal database files (`satquery.db`) or raw raster archives.
+- **Upload Filename & MIME Sanitization**: Strict allow-listing of extensions (`.tif`, `.tiff`, `.png`, `.jpg`, `.jpeg`) and sanitization via `os.path.basename` to prevent path traversal exploits (`../../etc/passwd.tif`).
+- **Comprehensive `.gitignore` Protection**: Exhaustively ignores `frontend/.env*`, `backend/.env*`, `*.local`, and `*.key`.
+
+---
+
+## 📡 API Specification & cURL Examples
+
+### 1. `POST /api/query` (Multimodal Query Execution)
+Executes visual question answering or change detection on 1 or 2 uploaded images.
+
+```bash
+curl -X POST "http://localhost:8000/api/query" \
+  -F "query_text=Detect urban construction and water body boundaries" \
+  -F "files=@delhi_2020.tif" \
+  -F "files=@delhi_2024.tif" \
+  -F "capture_dates=2020-01-15" \
+  -F "capture_dates=2024-08-20"
 ```
 
-- **Local Development**: `API_BASE` is `""`. Vite proxy forwards `/api` and `/health` to `http://localhost:8000`.
-- **Vercel Fullstack Deployment**: `vercel.json` routes `/api/(.*)` directly to `api/index.py` serverless function on the same domain.
-- **Distributed Deployment (e.g. Vercel Frontend + Render Backend)**: Set `VITE_BACKEND_URL=https://your-backend.onrender.com` in Vercel Environment Variables.
+**Response**:
+```json
+{
+  "answer": "Detected 12.4 km² of new urban infrastructure expansion between 2020 and 2024.",
+  "task_type": "change_detection",
+  "evidence": {
+    "change_detected": true,
+    "change_area_km2": 12.4,
+    "confidence": 0.942
+  },
+  "trace": [
+    { "title": "Router", "desc": "Assigned to Bi-Temporal Change Detection Engine." },
+    { "title": "Vision Engine", "desc": "Calculated structural similarity delta across T1 and T2." },
+    { "title": "Evidence Synthesis", "desc": "Grounded response generated with 94.2% confidence." }
+  ],
+  "input_image_urls": ["/static/uploads/a1b2c3d4e5f6.png", "/static/uploads/f6e5d4c3b2a1.png"],
+  "result_image_url": "/static/processed/diff_9876543210ab.png"
+}
+```
+
+### 2. `POST /api/query_by_location` (Geocoding & Catalog Retrieval)
+Geocodes a place name, retrieves relevant satellite rasters, and executes the pipeline.
+
+```bash
+curl -X POST "http://localhost:8000/api/query_by_location" \
+  -F "query_text=Assess flood inundation extent" \
+  -F "place_name=Kaziranga National Park"
+```
+
+### 3. `GET /health` (System Status)
+```bash
+curl "http://localhost:8000/health"
+```
+**Response**:
+```json
+{
+  "status": "ok",
+  "app": "SatQuery AI",
+  "mock_mode": true
+}
+```
 
 ---
 
-## ⚠️ Known Errors, Edge Cases & Hallucination Mitigation
+## 🧪 Test Suite & Verification Matrix
 
-| Area | Challenge / Edge Case | System Mitigation Strategy |
-| :--- | :--- | :--- |
-| **Model Inferences** | ML models in beta phase may misclassify ambiguous land cover. | **Beta Warning Banner** is permanently rendered on UI informing users of ongoing active training. |
-| **LLM Hallucinations** | Vision models might overestimate crop area or building counts. | **Evidence Engine Firewall**: The LLM prompt is mathematically constrained to only cite numbers from the locked evidence JSON. |
-| **Serverless Memory Limits** | Vercel serverless functions have a 250MB limit (heavy PyTorch weights cannot load). | `os.environ.setdefault("VQA_MOCK_MODE", "True")` in `api/index.py` ensures 100% uptime with deterministic simulation on serverless. |
-| **Mapbox Coordinate Boundary** | Clicking coordinates outside valid raster boundaries. | Auto-clamping to WGS84 standard `[-90, 90]` latitude and `[-180, 180]` longitude with visual toast error alerts. |
-| **CORS Access** | Cross-Origin errors when deploying on distinct domains. | FastAPI backend includes pre-configured `CORSMiddleware` with `allow_origins=["*"]`. |
+SatQuery AI includes a **37-test automated verification suite** covering routing logic, evidence verification, location resolution, and security defenses:
 
----
+```bash
+cd backend
+./venv/bin/pytest tests/ -v
+```
 
-## 📡 API Specification & Endpoints
+```
+============================= test session starts ==============================
+collected 37 items
 
-### 1. `POST /api/query`
-Executes multimodal VQA or Change Detection on uploaded images.
-- **Parameters (Multipart Form-Data)**:
-  - `query_text` (string): Natural language user question.
-  - `files` (array of binary files): 1 or 2 satellite rasters (PNG / TIFF / GeoTIFF).
-  - `capture_dates` (optional array of strings): ISO dates for temporal analysis (e.g. `["2020-01-15", "2024-08-20"]`).
-- **Response**:
-  ```json
-  {
-    "answer": "Detected 12.4 km² of urban expansion in northwest quadrant.",
-    "task_type": "change_detection",
-    "evidence": {
-      "change_detected": true,
-      "change_area_km2": 12.4,
-      "confidence": 0.942
-    },
-    "trace": [
-      { "title": "Router", "desc": "Assigned to Bi-Temporal Change Detection Engine." },
-      { "title": "Vision Engine", "desc": "Calculated structural similarity delta across T1 and T2." },
-      { "title": "Evidence Synthesis", "desc": "Grounded response generated with 94.2% confidence." }
-    ]
-  }
-  ```
+tests/test_evidence_engine.py::test_evidence_engine_locks_only_known_fields PASSED  [ 2%]
+tests/test_evidence_engine.py::test_evidence_engine_defaults_confidence_when_missing PASSED [ 5%]
+tests/test_langgraph_router.py::TestIntentScoring::test_change_keywords_score_high PASSED [ 8%]
+tests/test_langgraph_router.py::TestIntentClassifierNode::test_returns_intent_scores_and_primary PASSED [ 18%]
+tests/test_location_resolver.py::test_geocode_offline_fallbacks PASSED              [ 56%]
+tests/test_location_resolver.py::test_api_query_by_location_endpoint PASSED         [ 70%]
+tests/test_router.py::test_two_optical_images_route_to_change_detection PASSED     [ 75%]
+tests/test_security.py::test_reject_malicious_file_extension PASSED                 [ 86%]
+tests/test_security.py::test_accept_valid_image_extension PASSED                    [ 89%]
+tests/test_security.py::test_path_traversal_filename_sanitization PASSED            [ 91%]
+tests/test_security.py::test_static_directory_traversal_prevention PASSED          [ 94%]
+tests/test_security.py::test_file_count_boundary_conditions PASSED                  [ 97%]
+tests/test_security.py::test_cors_preflight_headers PASSED                          [100%]
 
-### 2. `POST /api/query_by_location`
-Resolves a location name, retrieves satellite imagery, and runs analysis.
-- **Parameters**:
-  - `query_text` (string): User prompt.
-  - `place_name` (string): Location name (e.g. `"Delhi NCR"`).
-
-### 3. `GET /health`
-Returns real-time backend pipeline and engine status.
-- **Response**: `{"status": "ok", "app": "SatQuery AI", "mock_mode": true}`
+======================== 37 passed, 8 warnings in 3.57s ========================
+```
 
 ---
 
-## 💻 Getting Started & Local Development
+## 🚀 Getting Started & Quickstart
 
-### Prerequisites:
-- **Node.js**: v18.0 or higher
-- **Python**: v3.10 or v3.11
+### Local Development
 
-### 1. Clone Repository & Switch to Frontend Branch:
+#### 1. Clone & Switch to `Frontend` Branch:
 ```bash
 git clone https://github.com/shuryansmishra/shi2026.git
 cd shi2026
 git checkout Frontend
 ```
 
-### 2. Start FastAPI Backend:
+#### 2. Start FastAPI Backend:
 ```bash
 cd backend
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+cp .env.example .env
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 3. Start React Frontend:
+#### 3. Start React Frontend:
 ```bash
 cd ../frontend
 npm install
+cp .env.example .env  # Add your Mapbox token to VITE_MAPBOX_TOKEN
 npm run dev
 ```
 Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ---
 
-## 🚀 Vercel Fullstack Deployment Guide
+### 1-Click Vercel Deployment
 
-Both the **React Frontend** and **FastAPI Backend** can be deployed together on **Vercel** with zero extra infrastructure:
-
-1. Go to [Vercel New Project](https://vercel.com/new) and import `shuryansmishra/shi2026`.
+1. Go to [Vercel Dashboard](https://vercel.com/new) and import `shuryansmishra/shi2026`.
 2. Select branch: **`Frontend`**.
-3. **Root Directory**: Keep as **`./`** (Vercel automatically detects the root `vercel.json`).
+3. **Root Directory**: Leave as **`./`** (Vercel automatically detects the root `vercel.json`).
 4. **Environment Variables**:
-   - `VITE_MAPBOX_TOKEN` = `pk.eyJ1IjoiYWpsYWFuOTkxOSIsImEiOiJjbXQ4dzV3NHowMWF1MndzaGJjeGdmaHYyIn0.ztQua4BZO5JbZanQqVrKWw`
+   - `VITE_MAPBOX_TOKEN` = `pk.your_mapbox_public_token_here`
    - `VQA_MOCK_MODE` = `True`
-5. Click **Deploy**. Your fullstack AI application will be live in seconds!
+5. Click **Deploy**. Both React Frontend and FastAPI Backend will be live in seconds!
 
 ---
 
-## 📂 Repository Structure
+## 📂 Directory Tree
 
 ```
 shi2026/
+├── docs/                        # Architecture diagrams & UI showcases
+│   ├── hero_banner.jpg
+│   └── ui_showcase.jpg
 ├── vercel.json                  # Monorepo fullstack Vercel edge routing
 ├── api/                         # Vercel Serverless Python Adapter
 │   ├── index.py                 # Serverless FastAPI entrypoint
 │   └── requirements.txt         # Serverless Python dependencies
 ├── backend/                     # FastAPI Core Pipeline
-│   ├── main.py                  # API endpoints & middleware
-│   ├── config.py                # Environment configurations
+│   ├── main.py                  # API endpoints, CORS, and static public mount
+│   ├── config.py                # Environment configurations and security settings
 │   ├── core/                    # Agentic Router & Evidence Firewall
-│   │   ├── router.py            # Task intent classifier
+│   │   ├── router.py            # LangGraph intent classifier & router
 │   │   └── evidence_engine.py   # Hallucination firewall
 │   ├── engines/                 # Vision & Change Detection Engines
 │   │   ├── single_image_engine.py
 │   │   ├── change_engine.py
 │   │   └── fusion_engine.py
 │   ├── ingestion/               # Geocoding & GeoTIFF preprocessing
+│   │   ├── location_resolver.py
+│   │   └── preprocessing.py
 │   ├── llm/                     # Grounded LLM synthesis layer
 │   ├── models/schemas.py        # Pydantic data schemas
+│   ├── tests/                   # 37-test automated test suite
+│   │   ├── test_security.py     # File validation, CORS & traversal tests
+│   │   ├── test_router.py
+│   │   └── test_location_resolver.py
 │   └── requirements.txt         # Full backend dependencies
 ├── frontend/                    # React 18 + Vite Application
 │   ├── src/
@@ -322,10 +486,12 @@ shi2026/
 
 ---
 
-## 👥 Team & Acknowledgments
+## 👥 Team & Hackathon Acknowledgments
 - **Project**: SatQuery AI (SIH26167)
 - **Track**: ISRO / Space Technology
 - **Repository**: [https://github.com/shuryansmishra/shi2026](https://github.com/shuryansmishra/shi2026)
 
 ---
-*Built with ❤️ for Space Technology & Geospatial AI Innovation.*
+<div align="center">
+<b>Built with ❤️ for Space Technology & Geospatial AI Innovation.</b>
+</div>
