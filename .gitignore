@@ -29,8 +29,18 @@ backend/demo_data/vqa_dataset.json
 
 # Environment variables & secrets
 .env
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 backend/.env
-backend/.env.production
+backend/.env.*
+!backend/.env.example
+*.local
+*.pem
+*.key
+*.secret
 
 # Model Weights & Checkpoints (large binaries)
 *.pt

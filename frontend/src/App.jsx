@@ -7,8 +7,8 @@ import LoginModal from "./components/LoginModal.jsx";
 import Toast from "./components/Toast.jsx";
 import { checkHealth } from "./api.js";
 
-// Read Mapbox token from environment variable (.env file)
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "pk.eyJ1IjoiYWpsYWFuOTkxOSIsImEiOiJjbXQ4dzV3NHowMWF1MndzaGJjeGdmaHYyIn0.ztQua4BZO5JbZanQqVrKWw";
+// Read Mapbox token strictly from environment variable (.env file)
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("change_detection"); // Default to Change Detection as in Figma

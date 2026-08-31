@@ -17,9 +17,14 @@ class Settings(BaseSettings):
     ENV: str = "development"
     DEBUG: bool = True
 
+    # --- Security & CORS ---
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://localhost:8000,https://*.vercel.app"
+    ALLOWED_EXTENSIONS: set = {".tif", ".tiff", ".png", ".jpg", ".jpeg"}
+
     # --- Storage ---
     UPLOAD_DIR: str = "./storage/uploads"
     PROCESSED_DIR: str = "./storage/processed"
+    PUBLIC_STORAGE_DIR: str = "./storage/public"
     DEMO_DATA_DIR: str = "../demo_data"
     MAX_UPLOAD_MB: int = 200
 

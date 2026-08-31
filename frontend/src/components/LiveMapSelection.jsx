@@ -207,9 +207,9 @@ export default function LiveMapSelection({ mapboxToken, mapStyle, onShowToast })
   // Initialize Mapbox Map
   useEffect(() => {
     if (!mapContainerRef.current) return;
+    if (!mapboxToken) return;
 
-    const token = mapboxToken || "pk.eyJ1IjoiYWpsYWFuOTkxOSIsImEiOiJjbXQ4dzV3NHowMWF1MndzaGJjeGdmaHYyIn0.ztQua4BZO5JbZanQqVrKWw";
-    mapboxgl.accessToken = token;
+    mapboxgl.accessToken = mapboxToken;
 
     try {
       const map = new mapboxgl.Map({
@@ -299,8 +299,7 @@ export default function LiveMapSelection({ mapboxToken, mapStyle, onShowToast })
       return;
     }
 
-    const token = mapboxToken || "pk.eyJ1IjoiYWpsYWFuOTkxOSIsImEiOiJjbXQ4dzV3NHowMWF1MndzaGJjeGdmaHYyIn0.ztQua4BZO5JbZanQqVrKWw";
-    const locDetails = await resolveLocationName(lng, lat, token);
+    const locDetails = await resolveLocationName(lng, lat, mapboxToken);
 
     const custom = {
       name: locDetails.name,

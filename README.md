@@ -260,42 +260,33 @@ The SatQuery AI interface follows a clean, modern **Apple / Figma Glassmorphic D
 
 ---
 
-## 🔬 Machine Learning Architecture, Checkpoints & Inference Pipelines
+## 🔬 Machine Learning Training & Production Roadmap
 
-SatQuery AI supports a modular 3-tier execution model spanning standalone offline inference, cloud-accelerated VLM tunnels, and real pre-trained PyTorch neural weights:
+SatQuery AI includes a complete training pipeline to transition from deterministic mock simulation to deep neural network checkpoints:
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                               3-TIER INFERENCE ARCHITECTURE                            │
-├──────────────────────────────┬──────────────────────────────┬──────────────────────────┤
-│    Tier 1: Cloud VLM (Colab) │   Tier 2: Real Local PyTorch │   Tier 3: Mock Fallback  │
-│  - Qwen2.5-VL 7B / LoRA      │  - TinySiameseChange (.pt)   │  - Deterministic Math    │
-│  - 4-bit NF4 Quantization    │  - TinyDualEncoderFusion (.pt│  - Zero GPU / Zero Cost  │
-│  - Remote ngrok / Modal      │  - Rasterio SSIM / GeoJSON   │  - Instant Prototype Demo│
-└──────────────────────────────┴──────────────────────────────┴──────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│              PHASE 1: Standalone Mock Mode                │
+│ (VQA_MOCK_MODE=True • Fast, GPU-Free, Deterministic Demos)│
+└─────────────────────────────┬─────────────────────────────┘
+                              │
+                    Fine-Tuning on Real Data
+                              │
+                              ▼
+┌───────────────────────────────────────────────────────────┐
+│            PHASE 2: Production Deep Learning              │
+│  (Qwen 2.5-VL LoRA • Siamese VisTA CNN • Dual Encoders)   │
+└───────────────────────────────────────────────────────────┘
 ```
 
-### 1. Vision-Language Model (Qwen2.5-VL) & Cloud Serving Bridge
-* **Colab Inference Server (`backend/colab_serve_qwen.py`)**:
-  * Runs `Qwen/Qwen2.5-VL-7B-Instruct` with `BitsAndBytesConfig` (4-bit NF4 quantization) on free Google Colab T4/A100 GPUs.
-  * Spins up a FastAPI server with automatic pyngrok tunneling, exposing a secure `/predict` endpoint that connects directly to the local or deployed SatQuery frontend.
-* **Specialized Satellite Prompt Engineering (`backend/engines/single_image_engine.py`)**:
-  * **Binary Grounding**: Constrains output to exact single-word answers (`yes`/`no`).
-  * **Multiple Choice (MCQ)**: Restricts responses to option letters (`a`, `b`, `c`, `d`).
-  * **Bounding Box Grounding**: Extracts normalized coordinates `[x1 y1, x2 y2]` displayed as cyan glowing visual bounding boxes on the frontend.
-  * **Scene Captioning**: Generates concise factual remote sensing descriptions.
-* **QLoRA Fine-Tuner (`backend/training/train_qwen_vl_lora.py`)**:
-  * Fine-tunes Qwen2.5-VL using HuggingFace `Trainer`, dynamic vision batch collators, token masking, and PEFT Low-Rank Adaptation (LoRA $r=16, \alpha=32$).
-
-### 2. Pre-Trained Bi-Temporal Change Engine (`TinySiameseChange`)
-* **Architecture**: Dual-branch Siamese ResNet-18 backbone + SSIM structural difference embeddings + dense change classifier.
-* **Checkpoint**: Stored in `backend/checkpoints/siamese_change_best.pt` (43.75 MB).
-* **Execution**: Reads raw multi-temporal GeoTIFFs with `rasterio`, calculates pixel-level Structural Similarity (`calculate_image_ssim`), extracts change area in hectares, and generates colorized change overlays.
-
-### 3. Pre-Trained Optical-SAR Cross-Modal Fusion Engine (`TinyDualEncoderFusion`)
-* **Architecture**: Optical RGB Branch (ResNet-18) + Single-Channel SAR Branch (Conv2d) + Cross-Attention Fusion Layer + Adaptive SAR Weight Scaling.
-* **Checkpoint**: Stored in `backend/checkpoints/optical_sar_fusion_best.pt` (89.42 MB).
-* **Execution**: Dynamically up-weights the SAR radar channel by 1.6x when optical cloud cover exceeds 40%, enabling continuous disaster monitoring through monsoons and cloud cover.
+1. **Qwen 2.5-VL LoRA Fine-Tuning (`backend/training/train_qwen_vl_lora.py`)**:
+   - Fine-tune Qwen 2.5-VL / BigEarthNet using Low-Rank Adaptation (LoRA) on satellite VQA datasets.
+   - Activate by setting `VQA_MOCK_MODE=False` and `VQA_MODEL_PATH=/path/to/checkpoint` in `backend/.env`.
+2. **Siamese ResNet / VisTA Change Detection**:
+   - Train dual-branch CNN on CDVQA and LEVIR-CD benchmark datasets.
+   - Point `CHANGE_MODEL_PATH` to the trained weights file.
+3. **ISRO Bhoonidhi Live Data Ingestion (`backend/data_access/bhoonidhi_client.py`)**:
+   - Connect authenticated credentials (`BHOONIDHI_USER`, `BHOONIDHI_PASSWORD`) to download live Cartosat-2S, LISS-IV, and RISAT scenes directly from NRSC.
 
 ---
 
@@ -305,7 +296,7 @@ SatQuery AI supports a modular 3-tier execution model spanning standalone offlin
 - **Strict CORS Origin Isolation**: Replaced open wildcard CORS with configurable `ALLOWED_ORIGINS` (supporting `http://localhost:5173`, `http://localhost:3000`, and `https://*.vercel.app` preview deployments).
 - **Public Storage Boundary Isolation**: Mounted exclusively `./storage/public` to prevent unauthorized HTTP access to internal database files (`satquery.db`) or raw raster archives.
 - **Upload Filename & MIME Sanitization**: Strict allow-listing of extensions (`.tif`, `.tiff`, `.png`, `.jpg`, `.jpeg`) and sanitization via `os.path.basename` to prevent path traversal exploits (`../../etc/passwd.tif`).
-- **Comprehensive `.gitignore` Protection**: Exhaustively ignores `frontend/.env*`, `backend/.env*`, `*.local`, `*.pt`, `*.pth`, `*.bin`, and `*.key`.
+- **Comprehensive `.gitignore` Protection**: Exhaustively ignores `frontend/.env*`, `backend/.env*`, `*.local`, and `*.key`.
 
 ---
 
@@ -317,32 +308,29 @@ Executes visual question answering or change detection on 1 or 2 uploaded images
 ```bash
 curl -X POST "http://localhost:8000/api/query" \
   -F "query_text=Detect urban construction and water body boundaries" \
-  -F "files=@demo_data/optical_t1.tif" \
-  -F "files=@demo_data/optical_t2.tif" \
-  -F "capture_dates=2024-01-15" \
-  -F "capture_dates=2024-06-20"
+  -F "files=@delhi_2020.tif" \
+  -F "files=@delhi_2024.tif" \
+  -F "capture_dates=2020-01-15" \
+  -F "capture_dates=2024-08-20"
 ```
 
 **Response**:
 ```json
 {
-  "answer": "Detected new construction expansion between 2024-01-15 and 2024-06-20.",
-  "task_type": "bi_temporal_change",
+  "answer": "Detected 12.4 km² of new urban infrastructure expansion between 2020 and 2024.",
+  "task_type": "change_detection",
   "evidence": {
-    "change_classes": ["new construction"],
-    "change_area_ha": 4.25,
-    "confidence": 0.942,
-    "bbox_pixel": [0.12, 0.34, 0.58, 0.76]
+    "change_detected": true,
+    "change_area_km2": 12.4,
+    "confidence": 0.942
   },
-  "trace": {
-    "steps": [
-      { "step": "ingest", "component": "ingestion.preprocessing", "output_summary": "Ingested 2 images" },
-      { "step": "routing", "component": "core.langgraph_router", "output_summary": "Routed to bi_temporal_change" },
-      { "step": "change_detection_inference", "component": "ChangeEngine", "output_summary": "SSIM=0.0044, Area=4.25ha" }
-    ]
-  },
-  "input_image_urls": ["/static/uploads/public/a1b2c3d4e5f6.png", "/static/uploads/public/f6e5d4c3b2a1.png"],
-  "result_image_url": "/static/processed/public/diff_9876543210ab.png"
+  "trace": [
+    { "title": "Router", "desc": "Assigned to Bi-Temporal Change Detection Engine." },
+    { "title": "Vision Engine", "desc": "Calculated structural similarity delta across T1 and T2." },
+    { "title": "Evidence Synthesis", "desc": "Grounded response generated with 94.2% confidence." }
+  ],
+  "input_image_urls": ["/static/uploads/a1b2c3d4e5f6.png", "/static/uploads/f6e5d4c3b2a1.png"],
+  "result_image_url": "/static/processed/diff_9876543210ab.png"
 }
 ```
 
@@ -351,8 +339,8 @@ Geocodes a place name, retrieves relevant satellite rasters, and executes the pi
 
 ```bash
 curl -X POST "http://localhost:8000/api/query_by_location" \
-  -F "query_text=Assess flood inundation extent and water area" \
-  -F "place_name=Hardoi, Uttar Pradesh"
+  -F "query_text=Assess flood inundation extent" \
+  -F "place_name=Kaziranga National Park"
 ```
 
 ### 3. `GET /health` (System Status)
@@ -364,7 +352,7 @@ curl "http://localhost:8000/health"
 {
   "status": "ok",
   "app": "SatQuery AI",
-  "mock_mode": false
+  "mock_mode": true
 }
 ```
 
@@ -372,7 +360,7 @@ curl "http://localhost:8000/health"
 
 ## 🧪 Test Suite & Verification Matrix
 
-SatQuery AI includes a comprehensive automated test suite covering routing logic, evidence locking, location resolution, and ML engine fallbacks:
+SatQuery AI includes a **37-test automated verification suite** covering routing logic, evidence verification, location resolution, and security defenses:
 
 ```bash
 cd backend
@@ -381,74 +369,68 @@ cd backend
 
 ```
 ============================= test session starts ==============================
-collected 31 items
+collected 37 items
 
-tests/test_evidence_engine.py::test_evidence_engine_locks_only_known_fields PASSED      [  3%]
-tests/test_evidence_engine.py::test_evidence_engine_defaults_confidence_when_missing PASSED [  6%]
-tests/test_langgraph_router.py::TestIntentScoring::test_change_keywords_score_high PASSED [  9%]
-tests/test_langgraph_router.py::TestIntentClassifierNode::test_returns_intent_scores PASSED [ 19%]
-tests/test_location_resolver.py::test_geocode_offline_fallbacks PASSED                  [ 58%]
-tests/test_location_resolver.py::test_api_query_by_location_endpoint PASSED             [ 71%]
-tests/test_router.py::test_two_optical_images_route_to_change_detection PASSED         [ 77%]
-tests/test_router.py::test_optical_and_sar_routes_to_fusion PASSED                     [100%]
+tests/test_evidence_engine.py::test_evidence_engine_locks_only_known_fields PASSED  [ 2%]
+tests/test_evidence_engine.py::test_evidence_engine_defaults_confidence_when_missing PASSED [ 5%]
+tests/test_langgraph_router.py::TestIntentScoring::test_change_keywords_score_high PASSED [ 8%]
+tests/test_langgraph_router.py::TestIntentClassifierNode::test_returns_intent_scores_and_primary PASSED [ 18%]
+tests/test_location_resolver.py::test_geocode_offline_fallbacks PASSED              [ 56%]
+tests/test_location_resolver.py::test_api_query_by_location_endpoint PASSED         [ 70%]
+tests/test_router.py::test_two_optical_images_route_to_change_detection PASSED     [ 75%]
+tests/test_security.py::test_reject_malicious_file_extension PASSED                 [ 86%]
+tests/test_security.py::test_accept_valid_image_extension PASSED                    [ 89%]
+tests/test_security.py::test_path_traversal_filename_sanitization PASSED            [ 91%]
+tests/test_security.py::test_static_directory_traversal_prevention PASSED          [ 94%]
+tests/test_security.py::test_file_count_boundary_conditions PASSED                  [ 97%]
+tests/test_security.py::test_cors_preflight_headers PASSED                          [100%]
 
-======================== 31 passed, 1 warning in 3.03s =========================
+======================== 37 passed, 8 warnings in 3.57s ========================
 ```
 
 ---
 
 ## 🚀 Getting Started & Quickstart
 
-### 1. Local Development (FastAPI + React)
+### Local Development
 
-#### Step 1: Clone Repository
+#### 1. Clone & Switch to `Frontend` Branch:
 ```bash
 git clone https://github.com/shuryansmishra/shi2026.git
 cd shi2026
+git checkout Frontend
 ```
 
-#### Step 2: Start FastAPI Backend
+#### 2. Start FastAPI Backend:
 ```bash
 cd backend
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env      # Or configure .env with real checkpoint paths
+cp .env.example .env
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-#### Step 3: Start React Frontend
+#### 3. Start React Frontend:
 ```bash
 cd ../frontend
 npm install
-cp .env.example .env      # Add VITE_MAPBOX_TOKEN (pk.your_token)
+cp .env.example .env  # Add your Mapbox token to VITE_MAPBOX_TOKEN
 npm run dev
 ```
 Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ---
 
-### 2. Optional: Connect Live Google Colab Qwen GPU Server
-
-1. Open Google Colab with **T4 GPU** runtime.
-2. Paste and run [backend/colab_serve_qwen.py](file:///Users/shuryansmishra/Downloads/satquery-ai/backend/colab_serve_qwen.py) (with your free ngrok token).
-3. Copy the printed tunnel URL and add to [backend/.env](file:///Users/shuryansmishra/Downloads/satquery-ai/backend/.env):
-   ```env
-   VQA_MOCK_MODE=false
-   QWEN_REMOTE_URL=https://your-tunnel.ngrok-free.app
-   ```
-4. All single-image satellite questions in the UI will now run live on Qwen2.5-VL!
-
----
-
-### 3. 1-Click Vercel Deployment
+### 1-Click Vercel Deployment
 
 1. Go to [Vercel Dashboard](https://vercel.com/new) and import `shuryansmishra/shi2026`.
-2. **Root Directory**: Leave as `./` (automatically reads root `vercel.json` and `api/index.py`).
-3. **Environment Variables**:
-   * `VITE_MAPBOX_TOKEN` = `pk.your_mapbox_public_token_here`
-   * `VQA_MOCK_MODE` = `True`
-4. Click **Deploy**. Both React Frontend and FastAPI Backend will be live in seconds!
+2. Select branch: **`Frontend`**.
+3. **Root Directory**: Leave as **`./`** (Vercel automatically detects the root `vercel.json`).
+4. **Environment Variables**:
+   - `VITE_MAPBOX_TOKEN` = `pk.your_mapbox_public_token_here`
+   - `VQA_MOCK_MODE` = `True`
+5. Click **Deploy**. Both React Frontend and FastAPI Backend will be live in seconds!
 
 ---
 
@@ -456,101 +438,51 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ```
 shi2026/
-├── docs/                                # Architecture diagrams & UI showcases
-│   ├── hero_banner.jpg                  # Hero banner asset
-│   └── ui_showcase.jpg                  # UI multi-viewport showcase
-├── vercel.json                          # Fullstack Vercel serverless routing configuration
-├── api/                                 # Vercel Serverless Python Gateway
-│   ├── index.py                         # Edge serverless FastAPI entrypoint
-│   └── requirements.txt                 # Edge serverless dependencies
-├── backend/                             # Core Python Backend & ML Engine
-│   ├── main.py                          # FastAPI application routes & static file server
-│   ├── config.py                        # Central Pydantic settings & environment configuration
-│   ├── colab_serve_qwen.py              # Turnkey Colab GPU server with ngrok tunnel
-│   ├── checkpoints/                     # Pre-trained neural network weights
-│   │   ├── siamese_change_best.pt       # VisTA Bi-Temporal change detection weights (43.75 MB)
-│   │   ├── optical_sar_fusion_best.pt   # Cross-Attention optical-SAR fusion weights (89.42 MB)
-│   │   └── qwen2.5-vl-sat-lora/         # Qwen LoRA adapter configuration
-│   ├── core/                            # Orchestration & Guardrails
-│   │   ├── router.py                    # Deterministic heuristic task router
-│   │   ├── langgraph_router.py          # StateGraph agentic router
-│   │   ├── rl_router.py                 # Q-learning reinforcement learning router
-│   │   └── evidence_engine.py           # Hallucination firewall & numerical locker
-│   ├── engines/                         # Computer Vision Processing Engines
-│   │   ├── base.py                      # Base constants & mock seeds
-│   │   ├── single_image_engine.py       # Qwen2.5-VL prompt builder, remote Colab & local VLM
-│   │   ├── change_engine.py             # VisTA Siamese difference & SSIM change engine
-│   │   └── fusion_engine.py             # Dual-encoder Optical-SAR cross-attention engine
-│   ├── ingestion/                       # Satellite Ingestion & Geocoding
-│   │   ├── location_resolver.py         # OSM Nominatim geocoding & Indian offline lookup
-│   │   └── preprocessing.py             # GeoTIFF metadata extractor & raster conversion
-│   ├── data/                            # Dataset Loaders
-│   │   └── bigearthnet_loader.py        # BigEarthNet S2/S1 multi-spectral loader
-│   ├── data_access/                     # External Space Agency Clients
-│   │   └── bhoonidhi_client.py          # ISRO NRSC Bhoonidhi search & download client
-│   ├── llm/                             # Grounded Natural Language Synthesis
-│   │   └── synthesis.py                 # Context-grounded response synthesizer
-│   ├── models/                          # Data Models & Neural Architectures
-│   │   ├── schemas.py                   # Pydantic schemas (EvidenceObject, ImageMeta, RouteDecision)
-│   │   └── vision_models.py             # PyTorch models (TinySatCNN, TinySiameseChange, TinyDualEncoderFusion)
-│   ├── training/                        # Training & Evaluation Pipelines
-│   │   ├── train_qwen_vl_lora.py        # Qwen2.5-VL QLoRA 4-bit fine-tuning script
-│   │   ├── evaluate_qwen.py             # VQA benchmark evaluation pipeline
-│   │   └── benchmark_modality.py        # Multi-modal performance benchmarking
-│   ├── tests/                           # Automated Test Suite (31 unit tests)
-│   │   ├── test_evidence_engine.py
-│   │   ├── test_langgraph_router.py
-│   │   ├── test_location_resolver.py
-│   │   └── test_router.py
-│   └── requirements.txt                 # Full backend dependencies (PyTorch, Rasterio, Transformers)
-├── frontend/                            # React 18 + Vite Application
+├── docs/                        # Architecture diagrams & UI showcases
+│   ├── hero_banner.jpg
+│   └── ui_showcase.jpg
+├── vercel.json                  # Monorepo fullstack Vercel edge routing
+├── api/                         # Vercel Serverless Python Adapter
+│   ├── index.py                 # Serverless FastAPI entrypoint
+│   └── requirements.txt         # Serverless Python dependencies
+├── backend/                     # FastAPI Core Pipeline
+│   ├── main.py                  # API endpoints, CORS, and static public mount
+│   ├── config.py                # Environment configurations and security settings
+│   ├── core/                    # Agentic Router & Evidence Firewall
+│   │   ├── router.py            # LangGraph intent classifier & router
+│   │   └── evidence_engine.py   # Hallucination firewall
+│   ├── engines/                 # Vision & Change Detection Engines
+│   │   ├── single_image_engine.py
+│   │   ├── change_engine.py
+│   │   └── fusion_engine.py
+│   ├── ingestion/               # Geocoding & GeoTIFF preprocessing
+│   │   ├── location_resolver.py
+│   │   └── preprocessing.py
+│   ├── llm/                     # Grounded LLM synthesis layer
+│   ├── models/schemas.py        # Pydantic data schemas
+│   ├── tests/                   # 37-test automated test suite
+│   │   ├── test_security.py     # File validation, CORS & traversal tests
+│   │   ├── test_router.py
+│   │   └── test_location_resolver.py
+│   └── requirements.txt         # Full backend dependencies
+├── frontend/                    # React 18 + Vite Application
 │   ├── src/
-│   │   ├── App.jsx                      # Main application shell with mode switching
-│   │   ├── index.css                    # Glassmorphic Apple/Figma design system
-│   │   ├── api.js                       # Dynamic API client supporting uploads & geocoding
-│   │   ├── assets/Login.json            # Vector Lottie animation
+│   │   ├── App.jsx              # Main application shell
+│   │   ├── index.css            # Glassmorphic Apple/Figma design system
+│   │   ├── api.js               # Dynamic API client
+│   │   ├── assets/Login.json    # Vector Lottie animation
 │   │   └── components/
-│   │       ├── Navbar.jsx               # Navigation bar & authentication trigger
-│   │       ├── SingleImageVQA.jsx       # Single image satellite VQA with visual bounding box
-│   │       ├── ChangeDetection.jsx      # Dual split Mapbox change detection & swipe slider
-│   │       ├── LiveMapSelection.jsx     # Multi-style satellite explorer & AOI bounding box
-│   │       ├── LoginModal.jsx           # Prototype phase Lottie modal
-│   │       └── Toast.jsx                # Alert toast notifications
+│   │       ├── Navbar.jsx       # 2-tier responsive nav & Sign In button
+│   │       ├── SingleImageVQA.jsx   # Single image satellite VQA
+│   │       ├── ChangeDetection.jsx  # Dual split Mapbox change detection
+│   │       ├── LiveMapSelection.jsx # Multi-style satellite explorer
+│   │       ├── LoginModal.jsx   # Prototype phase Lottie modal
+│   │       └── Toast.jsx        # Haptic alert toast notifications
 │   ├── package.json
-│   ├── vercel.json                      # SPA client routing configuration
+│   ├── vercel.json              # SPA client routing configuration
 │   └── vite.config.js
-├── demo_data/                           # Sample Sentinel-2 & SAR GeoTIFF scenes
-│   ├── optical_single.tif
-│   ├── optical_t1.tif
-│   ├── optical_t2.tif
-│   └── sar_copernicus.tif
-├── SatQuery_Preprocessing (5).ipynb     # 17,000+ line BigEarthNet & Qwen data preparation notebook
-└── README.md                            # Comprehensive system documentation
+└── README.md                    # System documentation
 ```
-
----
-
-## 📜 Commit History & System Evolution
-
-A chronological record of major milestones integrated into `main`:
-
-* **`0fb72bc`**: `feat(ml): wire real PyTorch change detection and cross-modal fusion engines, enhance Qwen LoRA trainer and location resolver`
-  * Added real PyTorch weights for `TinySiameseChange` and `TinyDualEncoderFusion` in `backend/checkpoints/`.
-  * Fixed missing imports in `change_engine.py` and `fusion_engine.py`.
-  * Enhanced `train_qwen_vl_lora.py` with HuggingFace `Trainer`, dynamic collator, and token masking.
-  * Configured `.gitignore` to exclude large binary weights.
-* **`9cb5c34`**: `Wire real ML checkpoints into processing engines`
-  * Added PyTorch state_dict loading seams in vision processing engines.
-* **`05b38ea` / `90cea47` (PR #2 from `ML`)**: `Add ML backend implementation`
-  * Created `backend/colab_serve_qwen.py` for cloud GPU execution via ngrok.
-  * Added task-specific prompt formatting and bounding box parser in `single_image_engine.py`.
-  * Extended `EvidenceObject` with `bbox_pixel` and `generated_answer`.
-  * Integrated cyan glowing bounding box overlays in `SingleImageVQA.jsx`.
-  * Added 17,000+ line preprocessing notebook `SatQuery_Preprocessing (5).ipynb`.
-* **`4f1d768` / `36f1606` (PR #1 from `Frontend`)**: `Complete high-res Mapbox VQA, dual change detection, mobile responsiveness, and Lottie Login modal`
-  * Overhauled UI with 3,000+ lines of custom glassmorphism styles in `index.css`.
-  * Added `SingleImageVQA.jsx`, `ChangeDetection.jsx`, `LiveMapSelection.jsx`, `Navbar.jsx`, and `LoginModal.jsx`.
-  * Configured Vercel fullstack deployment with `vercel.json` and `api/index.py`.
 
 ---
 
@@ -563,4 +495,3 @@ A chronological record of major milestones integrated into `main`:
 <div align="center">
 <b>Built with ❤️ for Space Technology & Geospatial AI Innovation.</b>
 </div>
-

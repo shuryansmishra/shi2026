@@ -38,15 +38,24 @@ settings = get_settings()
 
 app = FastAPI(title=settings.APP_NAME, version="0.1.0")
 
+# Parse allowed origins with Vercel regex support
+raw_origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
+has_vercel_wildcard = any("vercel.app" in o for o in raw_origins)
+clean_origins = [o for o in raw_origins if "*" not in o]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten before any real deployment
-    allow_methods=["*"],
+    allow_origins=clean_origins if clean_origins else ["*"],
+    allow_origin_regex=r"https://.*\.vercel\.app" if has_vercel_wildcard else None,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
-os.makedirs(os.path.join(settings.UPLOAD_DIR, "public"), exist_ok=True)
-app.mount("/static", StaticFiles(directory="./storage"), name="static")
+# Isolate public static storage (internal DB/rasters cannot be read via /static)
+os.makedirs(os.path.join(settings.PUBLIC_STORAGE_DIR, "uploads"), exist_ok=True)
+os.makedirs(os.path.join(settings.PUBLIC_STORAGE_DIR, "processed"), exist_ok=True)
+app.mount("/static", StaticFiles(directory=settings.PUBLIC_STORAGE_DIR), name="static")
 
 router_engine = AgenticRouter()
 evidence_engine = EvidenceEngine()
@@ -89,8 +98,16 @@ async def query(
         if upload.size and upload.size > settings.MAX_UPLOAD_MB * 1024 * 1024:
             raise HTTPException(400, f"{upload.filename} exceeds MAX_UPLOAD_MB={settings.MAX_UPLOAD_MB}")
 
+        # Sanitize filename and validate against allowed extensions
+        safe_filename = os.path.basename(upload.filename or "image.tif")
+        ext = os.path.splitext(safe_filename)[1].lower()
+        if ext not in settings.ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                400,
+                f"Unsupported file extension '{ext}'. Allowed extensions: {', '.join(sorted(settings.ALLOWED_EXTENSIONS))}"
+            )
+
         file_id = uuid.uuid4().hex[:12]
-        ext = os.path.splitext(upload.filename or "")[1] or ".tif"
         dest_path = os.path.join(settings.UPLOAD_DIR, f"{file_id}{ext}")
         with open(dest_path, "wb") as f:
             shutil.copyfileobj(upload.file, f)
@@ -126,18 +143,17 @@ async def query(
     input_image_urls = []
     for img in images:
         png_filename = f"{img.file_id}.png"
-        png_path = os.path.join(settings.UPLOAD_DIR, "public", png_filename)
+        png_path = os.path.join(settings.PUBLIC_STORAGE_DIR, "uploads", png_filename)
         if save_raster_as_png(img.path, png_path):
-            input_image_urls.append(f"/static/uploads/public/{png_filename}")
+            input_image_urls.append(f"/static/uploads/{png_filename}")
 
     result_image_url = None
     if "diff_map" in raw_output:
         diff_filename = f"diff_{uuid.uuid4().hex[:12]}.png"
-        diff_path = os.path.join(settings.PROCESSED_DIR, "public", diff_filename)
-        os.makedirs(os.path.join(settings.PROCESSED_DIR, "public"), exist_ok=True)
+        diff_path = os.path.join(settings.PUBLIC_STORAGE_DIR, "processed", diff_filename)
         change_thresh = raw_output.get("change_threshold", settings.CHANGE_THRESHOLD)
         if save_diff_map_as_png(raw_output["diff_map"], diff_path, change_thresh):
-            result_image_url = f"/static/processed/public/{diff_filename}"
+            result_image_url = f"/static/processed/{diff_filename}"
 
     return QueryResponse(
         answer=answer,
@@ -222,18 +238,17 @@ async def query_by_location(
     input_image_urls = []
     for img in images:
         png_filename = f"{img.file_id}.png"
-        png_path = os.path.join(settings.UPLOAD_DIR, "public", png_filename)
+        png_path = os.path.join(settings.PUBLIC_STORAGE_DIR, "uploads", png_filename)
         if save_raster_as_png(img.path, png_path):
-            input_image_urls.append(f"/static/uploads/public/{png_filename}")
+            input_image_urls.append(f"/static/uploads/{png_filename}")
 
     result_image_url = None
     if "diff_map" in raw_output:
         diff_filename = f"diff_{uuid.uuid4().hex[:12]}.png"
-        diff_path = os.path.join(settings.PROCESSED_DIR, "public", diff_filename)
-        os.makedirs(os.path.join(settings.PROCESSED_DIR, "public"), exist_ok=True)
+        diff_path = os.path.join(settings.PUBLIC_STORAGE_DIR, "processed", diff_filename)
         change_thresh = raw_output.get("change_threshold", settings.CHANGE_THRESHOLD)
         if save_diff_map_as_png(raw_output["diff_map"], diff_path, change_thresh):
-            result_image_url = f"/static/processed/public/{diff_filename}"
+            result_image_url = f"/static/processed/{diff_filename}"
 
     return QueryResponse(
         answer=answer,
