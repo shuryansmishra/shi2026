@@ -351,8 +351,11 @@ export default function LiveMapSelection({ mapboxToken, mapStyle, onShowToast })
       setChatInput("");
     } catch (err) {
       console.error("Location query error:", err);
+      const isOffline = err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError") || err.message?.includes("ERR_CONNECTION_REFUSED");
       setAiResult({
-        answer: `⚠️ Backend Connection Warning: Could not reach FastAPI model server at http://localhost:8000 (${err.message}).\n\nPlease ensure your backend is running:\ncd backend && python -m uvicorn main:app --reload --port 8000`,
+        answer: isOffline
+          ? `⚡ Backend server is not reachable. Start it with:\n\ncd backend && python -m uvicorn main:app --reload --port 8000\n\nThen retry your query for ${selectedLoc.short}.`
+          : `Analysis error for ${selectedLoc.short}: ${err.message}`,
         confidence: 0.0,
         area_ha: parseFloat(selectedLoc.area?.replace(/[^0-9.]/g, "")) || 0,
       });
