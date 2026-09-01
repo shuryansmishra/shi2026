@@ -316,7 +316,7 @@ export default function SingleImageVQA({ mapboxToken, onShowToast }) {
         {
           id: Date.now() + 1,
           type: "ai",
-          text: data.answer || `Spatial VQA analysis for ${selectedLoc.short} completed successfully. Identified structural boundaries and vegetation density.`,
+          text: data.answer || `Spatial analysis completed for ${selectedLoc.short}. Model identified key terrain features and confidence metrics.`,
           details: [area, `Confidence: ${conf}`],
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           sender: "SatQuery Core",
@@ -324,22 +324,20 @@ export default function SingleImageVQA({ mapboxToken, onShowToast }) {
       ]);
       onShowToast("VQA Query processed!");
     } catch (err) {
-      console.warn("Single VQA query fallback:", err);
-      setTimeout(() => {
-        setActiveStepIndex(3);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + 1,
-            type: "ai",
-            text: `Spatial reasoner output for "${text}" at ${selectedLoc.short}: Scene features isolated successfully. Identified 14 distinct structures, 3 primary road corridors, and stable NDVI vegetation index.`,
-            details: ["Objects: 17 total", "Confidence: 94.2%"],
-            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-            sender: "SatQuery Core",
-          },
-        ]);
-        onShowToast("VQA answer synthesized.");
-      }, 700);
+      console.error("Single VQA query error:", err);
+      setActiveStepIndex(3);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          type: "ai",
+          text: `⚠️ Backend Connection Warning: Could not reach FastAPI model server at http://localhost:8000 (${err.message}).\n\nPlease ensure your backend is running:\ncd backend && python -m uvicorn main:app --reload --port 8000`,
+          details: ["Status: Offline", "Port: 8000"],
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          sender: "SatQuery System",
+        },
+      ]);
+      onShowToast("Error connecting to backend server.");
     } finally {
       setLoading(false);
     }

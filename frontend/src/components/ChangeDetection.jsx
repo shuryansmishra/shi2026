@@ -350,22 +350,20 @@ export default function ChangeDetection({ mapboxToken, onShowToast }) {
       ]);
       onShowToast("Change analysis synthesized!");
     } catch (err) {
-      console.warn("Change detection query fallback:", err);
-      setTimeout(() => {
-        setActiveStepIndex(3);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + 1,
-            type: "ai",
-            text: `Detected 14.8 ha surface change between T1 (${t1Loc.short}, ${t1Loc.date}) and T2 (${t2Loc.short}, ${t2Loc.date}). Significant infrastructure expansion observed with high confidence.`,
-            details: ["Change Area: 14.8 ha", "Confidence: 94.2%"],
-            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-            sender: "SatQuery Core",
-          },
-        ]);
-        onShowToast("Change analysis synthesized.");
-      }, 700);
+      console.error("Change detection query error:", err);
+      setActiveStepIndex(3);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          type: "ai",
+          text: `⚠️ Backend Connection Warning: Could not reach FastAPI model server at http://localhost:8000 (${err.message}).\n\nPlease ensure your backend is running:\ncd backend && python -m uvicorn main:app --reload --port 8000`,
+          details: ["Status: Offline", "Port: 8000"],
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          sender: "SatQuery System",
+        },
+      ]);
+      onShowToast("Error connecting to backend server.");
     } finally {
       setLoading(false);
     }

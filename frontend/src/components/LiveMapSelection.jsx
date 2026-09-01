@@ -350,15 +350,13 @@ export default function LiveMapSelection({ mapboxToken, mapStyle, onShowToast })
       setAiResult(result);
       setChatInput("");
     } catch (err) {
-      console.warn("Location query fallback:", err);
-      setTimeout(() => {
-        setAiResult({
-          answer: `Telemetry Analysis for ${selectedLoc.name}: Response to "${promptToSend}" — Spatial reasoner identified stable multi-spectral signatures across active sensors (${Object.keys(datasets).filter((k) => datasets[k]).join(", ")}). Land cover indices and spectral reflectance align with baseline parameters.`,
-          confidence: 0.942,
-          area_ha: parseFloat(selectedLoc.area?.replace(/[^0-9.]/g, "")) || 1484,
-        });
-        setChatInput("");
-      }, 700);
+      console.error("Location query error:", err);
+      setAiResult({
+        answer: `⚠️ Backend Connection Warning: Could not reach FastAPI model server at http://localhost:8000 (${err.message}).\n\nPlease ensure your backend is running:\ncd backend && python -m uvicorn main:app --reload --port 8000`,
+        confidence: 0.0,
+        area_ha: parseFloat(selectedLoc.area?.replace(/[^0-9.]/g, "")) || 0,
+      });
+      setChatInput("");
     } finally {
       setLoading(false);
     }

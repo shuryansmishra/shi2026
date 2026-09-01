@@ -6,7 +6,33 @@
  *   - GET  /health
  */
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "") : "";
+const API_BASE = import.meta.env.VITE_BACKEND_URL
+  ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")
+  : (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? "http://localhost:8000"
+      : "");
+
+async function fetchWithFallback(endpoint, options) {
+  const url = `${API_BASE}${endpoint}`;
+  try {
+    const res = await fetch(url, options);
+    if (!res.ok) {
+      const detail = await res.text();
+      throw new Error(`Request to ${endpoint} failed (${res.status}): ${detail}`);
+    }
+    return await res.json();
+  } catch (err) {
+    // If direct API_BASE failed and we are local, try relative URL or direct localhost:8000
+    if (API_BASE && typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+      try {
+        const altUrl = endpoint;
+        const resAlt = await fetch(altUrl, options);
+        if (resAlt.ok) return await resAlt.json();
+      } catch (_) {}
+    }
+    throw err;
+  }
+}
 
 export async function runQuery(queryText, imageFiles, captureDates = []) {
   const form = new FormData();
@@ -20,19 +46,12 @@ export async function runQuery(queryText, imageFiles, captureDates = []) {
     if (date) form.append("capture_dates", date);
   });
 
-  const res = await fetch(`${API_BASE}/api/query`, { method: "POST", body: form });
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Query failed (${res.status}): ${detail}`);
-  }
-  return res.json();
+  return fetchWithFallback("/api/query", { method: "POST", body: form });
 }
 
 export async function checkHealth() {
   try {
-    const res = await fetch(`${API_BASE}/health`);
-    if (!res.ok) return { status: "error" };
-    return res.json();
+    return await fetchWithFallback("/health", { method: "GET" });
   } catch (e) {
     return { status: "offline", error: e.message };
   }
@@ -43,12 +62,7 @@ export async function runLocationQuery(queryText, placeName) {
   form.append("query_text", queryText);
   form.append("place_name", placeName);
 
-  const res = await fetch(`${API_BASE}/api/query_by_location`, { method: "POST", body: form });
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Location Query failed (${res.status}): ${detail}`);
-  }
-  return res.json();
+  return fetchWithFallback("/api/query_by_location", { method: "POST", body: form });
 }
 
 /**
