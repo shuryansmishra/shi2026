@@ -358,7 +358,7 @@ curl "http://localhost:8000/health"
 
 ---
 
-## 🧪 Test Suite & Verification Matrix
+## 🧪.  Test Suite & Verification Matrix
 
 SatQuery AI includes a **37-test automated verification suite** covering routing logic, evidence verification, location resolution, and security defenses:
 
