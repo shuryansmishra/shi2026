@@ -12,7 +12,6 @@ prior art -- know its limits, since a judge may ask).
 MOCK MODE mirrors single_image_engine.py: deterministic synthetic output so
 the rest of the pipeline is fully buildable/demoable before training finishes.
 """
-from inspect import trace
 from __future__ import annotations
 
 import os
