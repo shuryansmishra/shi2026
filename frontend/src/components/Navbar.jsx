@@ -29,7 +29,10 @@ export default function Navbar({ activeTab, onTabChange, backendStatus, onOpenLo
         <div className="nav-left">
           <div className="title-group">
             <div className="brand-frame">
-              <h1 className="brand-title">ISRO SatQuery AI</h1>
+              <h1 className="brand-title">
+                <span className="brand-title-full">ISRO SatQuery AI</span>
+                <span className="brand-title-short">SatQuery AI</span>
+              </h1>
             </div>
           </div>
         </div>
@@ -107,6 +110,7 @@ export default function Navbar({ activeTab, onTabChange, backendStatus, onOpenLo
         >
           <span className="tab-full">Single Image VQA</span>
           <span className="tab-short">Single VQA</span>
+          <span className="tab-micro">VQA</span>
         </button>
         <button
           ref={(el) => (tabsRef.current["change_detection"] = el)}
@@ -115,6 +119,7 @@ export default function Navbar({ activeTab, onTabChange, backendStatus, onOpenLo
         >
           <span className="tab-full">Change Detection</span>
           <span className="tab-short">Change Detection</span>
+          <span className="tab-micro">Change</span>
         </button>
         <button
           ref={(el) => (tabsRef.current["live_map"] = el)}
@@ -123,6 +128,7 @@ export default function Navbar({ activeTab, onTabChange, backendStatus, onOpenLo
         >
           <span className="tab-full">Live Map Selection</span>
           <span className="tab-short">Live Map</span>
+          <span className="tab-micro">Map</span>
         </button>
       </nav>
     </header>

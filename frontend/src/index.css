@@ -132,11 +132,23 @@ button:active {
   display: contents;
 }
 
+.brand-title-full {
+  display: inline;
+}
+
+.brand-title-short {
+  display: none;
+}
+
 .tab-full {
   display: inline;
 }
 
 .tab-short {
+  display: none;
+}
+
+.tab-micro {
   display: none;
 }
 
@@ -3132,12 +3144,14 @@ button:active {
     min-height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   .app-shell {
     height: auto;
     min-height: 100vh;
     padding: 0 8px 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     overflow: visible;
   }
 
@@ -3145,12 +3159,16 @@ button:active {
     display: flex;
     flex-direction: column;
     height: auto;
-    padding: 10px 12px;
+    min-height: auto;
+    padding: 8px 12px;
     gap: 8px;
     align-items: stretch;
     border-radius: 14px;
     width: 100%;
     box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
   .nav-top-bar {
@@ -3173,20 +3191,23 @@ button:active {
     display: flex;
     align-items: center;
     height: auto;
+    max-width: 60%;
   }
 
   .nav-divider-line {
     display: none;
   }
 
-  .status-frame {
-    padding: 2px 8px;
-    height: 22px;
-    border-radius: 11px;
+  .tab-full {
+    display: none !important;
   }
 
-  .status-text {
-    font-size: 10px;
+  .tab-short {
+    display: inline !important;
+  }
+
+  .tab-micro {
+    display: none !important;
   }
 
   .nav-tabs {
@@ -3250,6 +3271,7 @@ button:active {
     min-height: 380px;
     height: 380px;
     width: 100%;
+    touch-action: pan-x pan-y pinch-zoom;
   }
 
   .map-frame {
@@ -3285,8 +3307,9 @@ button:active {
   }
 
   .chat-feed {
-    max-height: 240px;
+    max-height: 260px;
     min-height: 120px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .chat-input, .chat-input-bar {
@@ -3306,6 +3329,7 @@ button:active {
 
   .location-list {
     max-height: 220px;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Floating controls & badges on mobile */
@@ -3318,7 +3342,13 @@ button:active {
     gap: 6px;
     flex-wrap: nowrap;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     border-radius: 100px;
+  }
+
+  .floating-controls::-webkit-scrollbar {
+    display: none;
   }
 
   .opacity-slider {
@@ -3330,6 +3360,12 @@ button:active {
     max-width: calc(100% - 20px);
     padding: 2px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .map-style-switcher-bar::-webkit-scrollbar {
+    display: none;
   }
 
   .map-style-pill {
@@ -3376,28 +3412,60 @@ button:active {
     padding: 3px 8px;
     top: 8px;
   }
+
+  .chips, .chips-grid, .quick-region-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .chips::-webkit-scrollbar, .chips-grid::-webkit-scrollbar, .quick-region-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip-btn, .chips button {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 480px) {
+  .brand-title-full {
+    display: none !important;
+  }
+
+  .brand-title-short {
+    display: inline !important;
+  }
+
   .tab-full {
     display: none !important;
   }
 
   .tab-short {
+    display: none !important;
+  }
+
+  .tab-micro {
     display: inline !important;
+    font-size: 11px;
+    font-weight: 700;
   }
 
   .app-shell {
-    padding: 0 6px 12px;
-  }
-
-  .brand-title {
-    font-size: 13.5px;
+    padding: 0 4px 10px;
   }
 
   .navbar {
-    padding: 8px 10px;
+    padding: 6px 8px;
     gap: 6px;
+  }
+
+  .brand-title {
+    font-size: 13px;
   }
 
   .nav-tabs {
@@ -3414,9 +3482,24 @@ button:active {
     padding: 0 2px;
   }
 
+  .nav-logout-btn .logout-text {
+    display: none;
+  }
+
+  .nav-logout-btn {
+    padding: 0 6px;
+    height: 28px;
+    width: 28px;
+  }
+
+  .user-pill-name {
+    max-width: 58px;
+    font-size: 10.5px;
+  }
+
   .main-map, .main-viewport, .map-frame {
-    min-height: 320px;
-    height: 320px;
+    min-height: 300px;
+    height: 300px;
   }
 
   .floating-controls {
@@ -3429,19 +3512,31 @@ button:active {
   }
 
   .opacity-slider {
-    width: 65px;
+    width: 60px;
   }
 
   .sidebar-left, .sidebar-right {
-    padding: 12px;
+    padding: 10px;
+    border-radius: 12px;
   }
 
-  .chips, .chips-grid {
-    gap: 4px;
+  .login-modal-card {
+    width: 94vw;
+    padding: 18px 14px 20px;
+    border-radius: 18px;
   }
 
-  .chips button, .chips-grid button, .chip-btn {
-    padding: 5px 8px;
-    font-size: 10px;
+  .login-modal-title {
+    font-size: 16px;
+  }
+
+  .login-modal-desc {
+    font-size: 11.5px;
+    line-height: 16px;
+  }
+
+  .auth-provider-btn {
+    height: 42px;
+    font-size: 12.5px;
   }
 }
