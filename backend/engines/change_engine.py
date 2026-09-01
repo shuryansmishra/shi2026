@@ -73,6 +73,7 @@ class ChangeEngine:
             "raw_scores": {change_class: round(confidence, 2)},
             "bbox_latlon": images[0].bbox_latlon,
             "change_threshold": self.settings.CHANGE_THRESHOLD,
+            "ssim_score": 0.85,
             "notes": [
                 "MOCK OUTPUT -- VQA_MOCK_MODE is on. Set CHANGE_MODEL_PATH and "
                 "VQA_MOCK_MODE=False once a VisTA/CDVQA-trained checkpoint exists.",
@@ -110,11 +111,17 @@ class ChangeEngine:
             raise RuntimeError("torch/skimage not installed.")
 
         model = TinySiameseChange(num_classes=len(MOCK_CHANGE_CLASSES))
-        if self.settings.CHANGE_MODEL_PATH and os.path.exists(self.settings.CHANGE_MODEL_PATH):
-            try:
-                model.load_state_dict(torch.load(self.settings.CHANGE_MODEL_PATH, map_location="cpu"))
-            except Exception as e:
-                print(f"[!] Could not load Change model weights: {e}")
+        ckpt_path = self.settings.CHANGE_MODEL_PATH
+        if ckpt_path:
+            if not os.path.exists(ckpt_path):
+                alt = os.path.join(os.path.dirname(os.path.dirname(__file__)), ckpt_path.lstrip("./"))
+                if os.path.exists(alt):
+                    ckpt_path = alt
+            if os.path.exists(ckpt_path):
+                try:
+                    model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
+                except Exception as e:
+                    print(f"[!] Could not load Change model weights: {e}")
         model.eval()
 
         ssim_score = 0.85
@@ -139,8 +146,9 @@ class ChangeEngine:
 
                 # Compute changed pixels where difference > threshold
                 h, w = arr1.shape[1], arr1.shape[2]
-                res_m = abs(src1.transform.a) if src1.transform else 10.0
-                total_area_ha = (h * w * (res_m ** 2)) / 10000.0
+                res_raw = abs(src1.transform.a) if src1.transform else 10.0
+                res_m = res_raw * 111320.0 if res_raw < 0.5 else res_raw
+                total_area_ha = max(1.0, (h * w * (res_m ** 2)) / 10000.0)
                 
                 # Change area proportional to 1 - SSIM score
                 change_fraction = max(0.0, 1.0 - ssim_score)

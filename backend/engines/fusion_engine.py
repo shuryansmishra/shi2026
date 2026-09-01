@@ -121,11 +121,17 @@ class FusionEngine:
             raise RuntimeError("torch not installed")
 
         model = TinyDualEncoderFusion(num_classes=len(MOCK_LAND_COVER_CLASSES))
-        if self.settings.FUSION_MODEL_PATH and os.path.exists(self.settings.FUSION_MODEL_PATH):
-            try:
-                model.load_state_dict(torch.load(self.settings.FUSION_MODEL_PATH, map_location="cpu"))
-            except Exception as e:
-                print(f"[!] Could not load Fusion model weights: {e}")
+        ckpt_path = self.settings.FUSION_MODEL_PATH
+        if ckpt_path:
+            if not os.path.exists(ckpt_path):
+                alt = os.path.join(os.path.dirname(os.path.dirname(__file__)), ckpt_path.lstrip("./"))
+                if os.path.exists(alt):
+                    ckpt_path = alt
+            if os.path.exists(ckpt_path):
+                try:
+                    model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
+                except Exception as e:
+                    print(f"[!] Could not load Fusion model weights: {e}")
         model.eval()
 
         computed_area_ha = 15.0
@@ -144,8 +150,9 @@ class FusionEngine:
                 sar_arr = src_sar.read([1])
 
                 h, w = opt_arr.shape[1], opt_arr.shape[2]
-                res_m = abs(src_opt.transform.a) if src_opt.transform else 10.0
-                computed_area_ha = round((h * w * (res_m ** 2)) / 10000.0, 2)
+                res_raw = abs(src_opt.transform.a) if src_opt.transform else 10.0
+                res_m = res_raw * 111320.0 if res_raw < 0.5 else res_raw
+                computed_area_ha = max(1.0, round((h * w * (res_m ** 2)) / 10000.0, 2))
 
                 ssim_correlation, ssim_diff_map = calculate_image_ssim(opt_arr[0], sar_arr[0])
 
