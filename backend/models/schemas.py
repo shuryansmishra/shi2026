@@ -100,7 +100,9 @@ class EvidenceObject(BaseModel):
     area_ha: Optional[float] = None
     change_area_ha: Optional[float] = None
     bbox_latlon: Optional[BoundingBox] = None
+    bbox_pixel: Optional[List[float]] = Field(default=None, description="Normalized [x1, y1, x2, y2] bounding box")
     confidence: float = Field(ge=0.0, le=1.0)
+    generated_answer: Optional[str] = Field(default=None, description="Raw generation output from Qwen / VLM")
     land_cover_classes: List[str] = Field(default_factory=list)
     change_classes: List[str] = Field(default_factory=list)
     object_count: Optional[int] = None

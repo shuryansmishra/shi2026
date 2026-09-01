@@ -27,6 +27,7 @@ export default function SingleImageVQA({ mapboxToken, onShowToast }) {
   const [loading, setLoading] = useState(false);
   const [activeStepIndex, setActiveStepIndex] = useState(3);
   const [confidenceScore, setConfidenceScore] = useState("94.2%");
+  const [detectedBBox, setDetectedBBox] = useState(null);
 
   const [messages, setMessages] = useState([
     {
@@ -301,6 +302,11 @@ export default function SingleImageVQA({ mapboxToken, onShowToast }) {
         ? `${(data.evidence.confidence * 100).toFixed(1)}%`
         : (data.confidence ? `${(data.confidence * 100).toFixed(1)}%` : "94.2%");
       setConfidenceScore(conf);
+      if (data.evidence?.bbox_pixel) {
+        setDetectedBBox(data.evidence.bbox_pixel);
+      } else {
+        setDetectedBBox(null);
+      }
       const area = data.evidence?.area_ha
         ? `Area: ${data.evidence.area_ha} ha`
         : (data.area_ha ? `Scope: ${data.area_ha.toFixed(1)} ha` : "Scope: 24.5 ha");
@@ -472,20 +478,55 @@ export default function SingleImageVQA({ mapboxToken, onShowToast }) {
                 style={{ opacity: opacity / 100, transition: "opacity 0.15s ease" }}
               />
             ) : (
-              <div className="map-container-full">
+              <div className="map-container-full" style={{ position: "relative", overflow: "hidden" }}>
                 <img
                   src={previewUrl}
                   alt="Uploaded Satellite Scene"
                   style={{
                     width: "100%",
                     height: "100%",
-                    objectFit: "cover",
+                    objectFit: "contain",
                     transform: `scale(${scale})`,
                     transformOrigin: "center center",
                     opacity: opacity / 100,
                     transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease",
                   }}
                 />
+                {detectedBBox && detectedBBox.length === 4 && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: `${Math.min(detectedBBox[0], detectedBBox[2]) * 100}%`,
+                      top: `${Math.min(detectedBBox[1], detectedBBox[3]) * 100}%`,
+                      width: `${Math.abs(detectedBBox[2] - detectedBBox[0]) * 100}%`,
+                      height: `${Math.abs(detectedBBox[3] - detectedBBox[1]) * 100}%`,
+                      border: "2px solid #00f2fe",
+                      boxShadow: "0 0 12px rgba(0, 242, 254, 0.6)",
+                      backgroundColor: "rgba(0, 242, 254, 0.15)",
+                      pointerEvents: "none",
+                      zIndex: 10,
+                      borderRadius: "4px",
+                      transition: "all 0.3s ease"
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "-22px",
+                        left: "0",
+                        backgroundColor: "#00f2fe",
+                        color: "#0a192f",
+                        fontSize: "10px",
+                        fontWeight: "700",
+                        padding: "2px 6px",
+                        borderRadius: "3px",
+                        whiteSpace: "nowrap"
+                      }}
+                    >
+                      Qwen Detected Region
+                    </span>
+                  </div>
+                )}
               </div>
             )}
 
