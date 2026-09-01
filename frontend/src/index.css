@@ -2780,6 +2780,323 @@ button:active {
 }
 
 /* ==========================================================================
+   Firebase Authentication Buttons & User Profile UI
+   ========================================================================== */
+
+/* Navbar User Cluster & Capsule */
+.nav-user-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-user-pill {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px 3px 4px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 100px;
+  font-family: var(--font-family);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-user-pill:hover {
+  background: #FFFFFF;
+  border-color: rgba(0, 86, 167, 0.35);
+  box-shadow: 0 3px 10px rgba(0, 86, 167, 0.15);
+  transform: translateY(-1px);
+}
+
+.user-pill-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0056A7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-pill-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-pill-initial {
+  font-size: 11px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.user-pill-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00C853;
+  box-shadow: 0 0 4px #00C853;
+  flex-shrink: 0;
+}
+
+.nav-logout-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 100px;
+  font-family: var(--font-family);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #DC2626;
+  transform: translateY(-1px);
+}
+
+/* Auth Buttons Stack in Modal */
+.auth-btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.auth-provider-btn {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 42px;
+  border-radius: 12px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+}
+
+.google-auth-btn {
+  background: #FFFFFF;
+  color: #1F2937;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.google-auth-btn:hover:not(:disabled) {
+  background: #F9FAFB;
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.github-auth-btn {
+  background: #24292F;
+  color: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.github-auth-btn:hover:not(:disabled) {
+  background: #1B1F23;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.auth-provider-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.auth-provider-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.provider-logo {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.auth-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: authSpin 0.7s linear infinite;
+}
+
+@keyframes authSpin {
+  to { transform: rotate(360deg); }
+}
+
+.auth-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #DC2626;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-family: var(--font-family);
+  font-size: 11.5px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* Logged In User Profile Card in Modal */
+.user-logged-in-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-profile-card {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  background: #F8FAFC;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.user-profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0056A7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 86, 167, 0.2);
+}
+
+.user-profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-profile-initial {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.user-profile-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-profile-name {
+  margin: 0 0 2px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-profile-email {
+  margin: 0 0 6px;
+  font-family: var(--font-family);
+  font-size: 11.5px;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.meta-tag {
+  font-family: var(--font-family);
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.provider-tag {
+  background: rgba(0, 86, 167, 0.08);
+  color: #0056A7;
+  border: 1px solid rgba(0, 86, 167, 0.18);
+}
+
+.db-tag {
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.logout-btn {
+  background: rgba(239, 68, 68, 0.08);
+  color: #DC2626;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.logout-btn:hover:not(:disabled) {
+  background: #DC2626;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
    7. Comprehensive Responsive Breakpoints (Tablet & Mobile)
    ========================================================================== */
 @media (max-width: 1080px) {

@@ -6,6 +6,7 @@ import LiveMapSelection from "./components/LiveMapSelection.jsx";
 import LoginModal from "./components/LoginModal.jsx";
 import Toast from "./components/Toast.jsx";
 import { checkHealth } from "./api.js";
+import { auth, onAuthStateChanged, logoutUser } from "./firebase.js";
 
 // Read Mapbox token strictly from environment variable (.env file)
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
@@ -16,8 +17,14 @@ export default function App() {
   const [toastVisible, setToastVisible] = useState(false);
   const [backendStatus, setBackendStatus] = useState("ok");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
+    // Listen to Firebase Auth state
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
     // Ping backend health
     checkHealth().then((res) => {
       if (res.status === "ok") {
@@ -26,6 +33,8 @@ export default function App() {
         setBackendStatus("active");
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
   function showToast(msg) {
@@ -34,7 +43,16 @@ export default function App() {
     clearTimeout(showToast.timer);
     showToast.timer = setTimeout(() => {
       setToastVisible(false);
-    }, 2400);
+    }, 2800);
+  }
+
+  async function handleLogout() {
+    try {
+      await logoutUser();
+      showToast("Logged out successfully.");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   }
 
   return (
@@ -49,6 +67,8 @@ export default function App() {
         }}
         backendStatus={backendStatus}
         onOpenLogin={() => setIsLoginOpen(true)}
+        currentUser={currentUser}
+        onLogout={handleLogout}
       />
 
       {/* Dynamic View Sections with Smooth Animated Transitions */}
@@ -80,8 +100,13 @@ export default function App() {
       {/* Global Interactive Toast Notification */}
       <Toast message={toastMessage} visible={toastVisible} />
 
-      {/* Login & Prototype Info Modal */}
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      {/* Login & Researcher Profile Modal */}
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        currentUser={currentUser}
+        onShowToast={showToast}
+      />
     </div>
   );
 }
