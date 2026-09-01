@@ -1,4 +1,4 @@
-# 🛰️ ISRO SatQuery AI — Agentic Multimodal Geospatial Intelligence
+# ISRO SatQuery AI — Agentic Multimodal Geospatial Intelligence
 
 <div align="center">
 
