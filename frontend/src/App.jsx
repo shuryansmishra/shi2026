@@ -20,10 +20,10 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // Listen to Firebase Auth state
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
+    // Listen to Firebase Auth state (no-op if Firebase is not configured)
+    const unsubscribe = auth
+      ? onAuthStateChanged(auth, (user) => { setCurrentUser(user); })
+      : () => {};
 
     // Ping backend health
     checkHealth().then((res) => {

@@ -27,10 +27,22 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase App
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Guard: skip Firebase init entirely if env vars are not configured.
+// This lets the app run in pure ML-demo mode without a Firebase project.
+const firebaseConfigured = !!(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
+
+let app, auth, db;
+if (firebaseConfigured) {
+  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+} else {
+  console.info("[SatQuery] Firebase env vars not set — running in offline/demo mode. Auth & Firestore disabled.");
+  app = null;
+  auth = null;
+  db = null;
+}
+
 
 // Analytics initialization (safe browser environment check)
 let analytics = null;
@@ -58,7 +70,7 @@ githubProvider.addScope("user:email");
  * @param {string} providerName
  */
 export async function syncUserToFirestore(user, providerName = "google") {
-  if (!user || !user.uid) return null;
+  if (!user || !user.uid || !db) return null;
   try {
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
@@ -91,6 +103,7 @@ export async function syncUserToFirestore(user, providerName = "google") {
  * Sign in with Google Popup
  */
 export async function loginWithGoogle() {
+  if (!auth) { console.warn("[SatQuery] Firebase not configured. Add VITE_FIREBASE_* to frontend/.env.local"); return null; }
   const result = await signInWithPopup(auth, googleProvider);
   const user = result.user;
   await syncUserToFirestore(user, "google");
@@ -101,6 +114,7 @@ export async function loginWithGoogle() {
  * Sign in with GitHub Popup
  */
 export async function loginWithGithub() {
+  if (!auth) { console.warn("[SatQuery] Firebase not configured. Add VITE_FIREBASE_* to frontend/.env.local"); return null; }
   const result = await signInWithPopup(auth, githubProvider);
   const user = result.user;
   await syncUserToFirestore(user, "github");
@@ -111,6 +125,7 @@ export async function loginWithGithub() {
  * Sign out current user
  */
 export async function logoutUser() {
+  if (!auth) return;
   return signOut(auth);
 }
 
