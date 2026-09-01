@@ -4,38 +4,38 @@
  *   - POST /api/query
  *   - POST /api/query_by_location
  *   - GET  /health
+ *
+ * ROUTING STRATEGY:
+ * - In development (localhost): always use RELATIVE paths so Vite's proxy
+ *   forwards them to the backend (avoids CORS preflight entirely).
+ * - In production (Vercel/etc): use VITE_BACKEND_URL if it points to a
+ *   different host, otherwise fall back to relative paths.
  */
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL
+const _envUrl = import.meta.env.VITE_BACKEND_URL
   ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")
-  : (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-      ? "http://localhost:8000"
-      : "");
+  : "";
+
+// Use the Vite dev proxy (relative URL) whenever we are on localhost.
+// This sidesteps CORS entirely — the proxy makes a server-to-server request.
+const IS_LOCAL =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1");
+
+// On localhost: always use relative path (Vite proxy handles it).
+// On production: use the env URL if it differs from current host, else relative.
+const API_BASE = IS_LOCAL ? "" : _envUrl;
 
 async function fetchWithFallback(endpoint, options) {
-  const url = `${API_BASE}${endpoint}`;
-  try {
-    const res = await fetch(url, options);
-    if (!res.ok) {
-      let detail = "";
-      try { detail = await res.text(); } catch (_) {}
-      throw new Error(`Request to ${endpoint} failed (${res.status}): ${detail}`);
-    }
-    return await res.json();
-  } catch (err) {
-    // Only retry with direct localhost:8000 if we are NOT already targeting it,
-    // and only when the error is network-level (not an HTTP error response).
-    const isHttpError = err.message && /failed \(\d{3}\)/.test(err.message);
-    if (!isHttpError && API_BASE !== "http://localhost:8000" && typeof window !== "undefined"
-        && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
-      try {
-        const altUrl = `http://localhost:8000${endpoint}`;
-        const resAlt = await fetch(altUrl, options);
-        if (resAlt.ok) return await resAlt.json();
-      } catch (_) {}
-    }
-    throw err;
+  const url = API_BASE + endpoint;  // e.g. "/api/query" (proxied) or "https://xxx/api/query"
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    let detail = "";
+    try { detail = await res.text(); } catch (_) {}
+    throw new Error(`Request to ${endpoint} failed (${res.status}): ${detail}`);
   }
+  return res.json();
 }
 
 export async function runQuery(queryText, imageFiles, captureDates = []) {

@@ -325,13 +325,16 @@ export default function SingleImageVQA({ mapboxToken, onShowToast }) {
       onShowToast("VQA Query processed!");
     } catch (err) {
       console.error("Single VQA query error:", err);
+      const isOffline = err.message?.includes("Failed to fetch") || err.message?.includes("NetworkError") || err.message?.includes("ERR_CONNECTION_REFUSED");
       setActiveStepIndex(3);
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           type: "ai",
-          text: `⚠️ Backend Connection Warning: Could not reach FastAPI model server at http://localhost:8000 (${err.message}).\n\nPlease ensure your backend is running:\ncd backend && python -m uvicorn main:app --reload --port 8000`,
+          text: isOffline
+            ? `⚡ Backend server is offline. Start it with:\n\ncd backend && python -m uvicorn main:app --reload --port 8000\n\nThen retry your query.`
+            : `Analysis error: ${err.message}`,
           details: ["Status: Offline", "Port: 8000"],
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           sender: "SatQuery System",
