@@ -45,20 +45,40 @@ class SingleImageEngine:
                 return result
             except Exception as exc:
                 print(f"[SingleImageEngine] Remote Qwen API failed: {exc}. Falling back to local model.")
+                trace.add(
+                    step="single_image_remote_fallback",
+                    component="SingleImageEngine (Remote Qwen2.5-VL API)",
+                    parameters={"remote_url": self.settings.QWEN_REMOTE_URL, "error": str(exc)[:200]},
+                    output_summary=f"⚠️ Remote Qwen failed: {exc}. Falling back to local model.",
+                )
 
         # 2. Check if local Qwen weights or pipeline is active
         if not self.settings.VQA_MOCK_MODE and self.settings.VQA_MODEL_PATH:
-            try:
-                result = self._run_local_qwen(query_text, image, sub_tasks)
+            if not os.path.exists(self.settings.VQA_MODEL_PATH):
                 trace.add(
-                    step="single_image_inference",
+                    step="single_image_model_missing",
                     component="SingleImageEngine (Local Qwen2.5-VL)",
-                    parameters={"model_id": self.settings.QWEN_MODEL_ID, "file_id": image.file_id},
-                    output_summary=f"Qwen Answer: '{result.get('generated_answer', '')[:80]}...', confidence={result.get('confidence', 0.9):.2f}",
+                    parameters={"model_path": self.settings.VQA_MODEL_PATH},
+                    output_summary=f"⚠️ VQA_MODEL_PATH not found at '{self.settings.VQA_MODEL_PATH}'. Falling back to TinySatCNN.",
                 )
-                return result
-            except Exception as exc:
-                print(f"[SingleImageEngine] Local Qwen inference failed: {exc}. Falling back to TinySatCNN.")
+            else:
+                try:
+                    result = self._run_local_qwen(query_text, image, sub_tasks)
+                    trace.add(
+                        step="single_image_inference",
+                        component="SingleImageEngine (Local Qwen2.5-VL)",
+                        parameters={"model_id": self.settings.QWEN_MODEL_ID, "file_id": image.file_id},
+                        output_summary=f"Qwen Answer: '{result.get('generated_answer', '')[:80]}...', confidence={result.get('confidence', 0.9):.2f}",
+                    )
+                    return result
+                except Exception as exc:
+                    print(f"[SingleImageEngine] Local Qwen inference failed: {exc}. Falling back to TinySatCNN.")
+                    trace.add(
+                        step="single_image_local_fallback",
+                        component="SingleImageEngine (Local Qwen2.5-VL)",
+                        parameters={"model_id": self.settings.QWEN_MODEL_ID, "error": str(exc)[:200]},
+                        output_summary=f"⚠️ Local Qwen failed: {exc}. Falling back to TinySatCNN.",
+                    )
 
         # 3. Local PyTorch CNN Feature Model (TinySatCNN)
         if not self.settings.VQA_MOCK_MODE:
@@ -73,6 +93,12 @@ class SingleImageEngine:
                 return result
             except Exception as exc:
                 print(f"[SingleImageEngine] TinySatCNN inference failed: {exc}. Falling back to deterministic mock.")
+                trace.add(
+                    step="single_image_cnn_fallback",
+                    component="SingleImageEngine (TinySatCNN PyTorch)",
+                    parameters={"file_id": image.file_id, "error": str(exc)[:200]},
+                    output_summary=f"⚠️ TinySatCNN failed: {exc}. Using deterministic mock.",
+                )
 
         # 4. Mock Fallback
         result = self._run_mock(query_text, image, sub_tasks)

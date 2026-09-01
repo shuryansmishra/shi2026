@@ -132,6 +132,12 @@ class FusionEngine:
                     model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
                 except Exception as e:
                     print(f"[!] Could not load Fusion model weights: {e}")
+                    trace.add(
+                        step="fusion_model_weight_warning",
+                        component="FusionEngine",
+                        parameters={"ckpt_path": ckpt_path, "error": str(e)[:200]},
+                        output_summary=f"⚠️ Fusion checkpoint state_dict mismatch: {e}. Running with available weights.",
+                    )
         model.eval()
 
         computed_area_ha = 15.0
@@ -154,7 +160,10 @@ class FusionEngine:
                 res_m = res_raw * 111320.0 if res_raw < 0.5 else res_raw
                 computed_area_ha = max(1.0, round((h * w * (res_m ** 2)) / 10000.0, 2))
 
-                ssim_correlation, ssim_diff_map = calculate_image_ssim(opt_arr[0], sar_arr[0])
+                ssim_correlation, ssim_diff_map = calculate_image_ssim(
+                    opt_arr[0] / max(float(opt_arr[0].max()), 1.0),  # normalize optical to [0,1]
+                    sar_arr[0] / max(float(sar_arr[0].max()), 1.0),  # normalize SAR to [0,1]
+                )
 
                 # Capture raster metadata for GeoJSON vectorization
                 raster_transform = src_opt.transform

@@ -41,7 +41,8 @@ class Settings(BaseSettings):
 
     # --- Vision engines ---
     # VQA_MOCK_MODE=False uses real PyTorch models + rasterio + SSIM / Qwen
-    VQA_MOCK_MODE: bool = False
+    # Default is True (safe zero-config start). Override via .env: VQA_MOCK_MODE=false
+    VQA_MOCK_MODE: bool = True
     VQA_MODEL_PATH: Optional[str] = None       # e.g. ./checkpoints/qwen2.5-vl-lora
     CHANGE_MODEL_PATH: Optional[str] = None    # e.g. ./checkpoints/vista-cdvqa
     FUSION_MODEL_PATH: Optional[str] = None    # e.g. ./checkpoints/optical-sar-fusion

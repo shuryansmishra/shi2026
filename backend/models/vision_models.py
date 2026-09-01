@@ -115,7 +115,9 @@ class TinySiameseChange(nn.Module):
         feat2 = self.backbone(x2)
         diff_feat = torch.cat([feat1, feat2], dim=1)
 
-        ssim_tensor = torch.tensor([[ssim_score]], dtype=torch.float32, device=x1.device)
+        # FIX: use actual batch size so tensor shape [B,1] matches feat1/feat2
+        batch_size = x1.size(0)
+        ssim_tensor = torch.full((batch_size, 1), ssim_score, dtype=torch.float32, device=x1.device)
         ssim_emb = self.ssim_encoder(ssim_tensor)
 
         combined = torch.cat([diff_feat, ssim_emb], dim=1)

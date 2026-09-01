@@ -17,15 +17,19 @@ async function fetchWithFallback(endpoint, options) {
   try {
     const res = await fetch(url, options);
     if (!res.ok) {
-      const detail = await res.text();
+      let detail = "";
+      try { detail = await res.text(); } catch (_) {}
       throw new Error(`Request to ${endpoint} failed (${res.status}): ${detail}`);
     }
     return await res.json();
   } catch (err) {
-    // If direct API_BASE failed and we are local, try relative URL or direct localhost:8000
-    if (API_BASE && typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+    // Only retry with direct localhost:8000 if we are NOT already targeting it,
+    // and only when the error is network-level (not an HTTP error response).
+    const isHttpError = err.message && /failed \(\d{3}\)/.test(err.message);
+    if (!isHttpError && API_BASE !== "http://localhost:8000" && typeof window !== "undefined"
+        && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
       try {
-        const altUrl = endpoint;
+        const altUrl = `http://localhost:8000${endpoint}`;
         const resAlt = await fetch(altUrl, options);
         if (resAlt.ok) return await resAlt.json();
       } catch (_) {}

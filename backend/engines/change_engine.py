@@ -12,6 +12,7 @@ prior art -- know its limits, since a judge may ask).
 MOCK MODE mirrors single_image_engine.py: deterministic synthetic output so
 the rest of the pipeline is fully buildable/demoable before training finishes.
 """
+from inspect import trace
 from __future__ import annotations
 
 import os
@@ -122,6 +123,13 @@ class ChangeEngine:
                     model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
                 except Exception as e:
                     print(f"[!] Could not load Change model weights: {e}")
+                    # Note: model continues with random weights — trace this so it's visible
+                    trace.add(
+                        step="change_model_weight_warning",
+                        component="ChangeEngine",
+                        parameters={"ckpt_path": ckpt_path, "error": str(e)[:200]},
+                        output_summary=f"⚠️ Checkpoint loaded but state_dict mismatch: {e}. Running with available weights.",
+                    )
         model.eval()
 
         ssim_score = 0.85
