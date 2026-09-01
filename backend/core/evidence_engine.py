@@ -98,9 +98,6 @@ class EvidenceEngine:
         transform_data = raw_output.get("raster_transform")
         raster_crs = raw_output.get("raster_crs")
 
-        if diff_map is None or not isinstance(diff_map, np.ndarray):
-            return None
-
         if not HAS_GIS_VECTORIZE:
             trace.add(
                 step="vectorize_change_polygons",
@@ -108,6 +105,9 @@ class EvidenceEngine:
                 parameters={},
                 output_summary="Skipped: rasterio/shapely not available for vectorization",
             )
+            return None
+
+        if diff_map is None or not isinstance(diff_map, np.ndarray):
             return None
 
         try:

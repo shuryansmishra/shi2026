@@ -24,6 +24,11 @@ frontend/build/
 storage/
 backend/storage/
 backend/satquery.db
+# Evaluation & Benchmark Outputs
+evaluation_results.json
+evaluation_results.md
+benchmark_results.json
+benchmark_results.md
 backend/evaluation_results.json
 backend/evaluation_results.md
 backend/benchmark_results.json

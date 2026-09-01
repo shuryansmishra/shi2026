@@ -38,7 +38,7 @@ class LLMSynthesis:
     def synthesize(
         self,
         query_text: str,
-        route: RouteDecision,
+        route: Optional[RouteDecision],
         evidence: EvidenceObject,
         trace: ExecutionTrace,
     ) -> str:
@@ -140,7 +140,7 @@ class LLMSynthesis:
 
     # -- zero-dependency fallback ---------------------------------------------
 
-    def _template_answer(self, query_text: str, route: RouteDecision, evidence: EvidenceObject) -> str:
+    def _template_answer(self, query_text: str, route: Optional[RouteDecision], evidence: EvidenceObject) -> str:
         parts = []
         classes = evidence.land_cover_classes or evidence.change_classes
         if classes:
