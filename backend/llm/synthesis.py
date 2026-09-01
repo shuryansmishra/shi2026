@@ -42,7 +42,11 @@ class LLMSynthesis:
         evidence: EvidenceObject,
         trace: ExecutionTrace,
     ) -> str:
-        if self.settings.LLM_PROVIDER == "anthropic" and self.settings.ANTHROPIC_API_KEY:
+        # If Qwen directly generated an answer during vision inference, prioritize it
+        if evidence.generated_answer:
+            answer = evidence.generated_answer
+            method = "qwen_direct_vqa"
+        elif self.settings.LLM_PROVIDER == "anthropic" and self.settings.ANTHROPIC_API_KEY:
             try:
                 answer = self._call_anthropic(query_text, evidence)
                 method = "anthropic_api"

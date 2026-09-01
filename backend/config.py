@@ -35,11 +35,17 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = "gpt-4o"
 
     # --- Vision engines ---
-    # VQA_MOCK_MODE=False uses real PyTorch models + rasterio + SSIM
+    # VQA_MOCK_MODE=False uses real PyTorch models + rasterio + SSIM / Qwen
     VQA_MOCK_MODE: bool = False
-    VQA_MODEL_PATH: Optional[str] = None       # e.g. ./checkpoints/qwen2vl-rs-lora
+    VQA_MODEL_PATH: Optional[str] = None       # e.g. ./checkpoints/qwen2.5-vl-lora
     CHANGE_MODEL_PATH: Optional[str] = None    # e.g. ./checkpoints/vista-cdvqa
     FUSION_MODEL_PATH: Optional[str] = None    # e.g. ./checkpoints/optical-sar-fusion
+
+    # --- Qwen 2.5 VL Integration ---
+    QWEN_MODEL_ID: str = "Qwen/Qwen2.5-VL-7B-Instruct"
+    QWEN_REMOTE_URL: Optional[str] = None      # e.g. https://xxxx.ngrok-free.app or modal/HF endpoint
+    QWEN_USE_4BIT: bool = True
+    QWEN_DEVICE: str = "auto"
 
     # --- Geospatial ---
     TARGET_UTM_CRS: str = "EPSG:32644"        # UTM 44N, adjust to your AOI

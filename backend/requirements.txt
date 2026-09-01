@@ -29,6 +29,10 @@ httpx==0.27.2
 torch
 torchvision
 transformers
+accelerate
+bitsandbytes
+qwen-vl-utils
+requests
 
 # --- Agentic Router (LangGraph StateGraph) ---
 langgraph
