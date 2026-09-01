@@ -14,6 +14,7 @@ the rest of the pipeline is fully buildable/demoable before training finishes.
 """
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, List
 
 from config import get_settings

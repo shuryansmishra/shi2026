@@ -15,6 +15,7 @@ MOCK MODE mirrors the other two engines.
 """
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, List
 
 from config import get_settings

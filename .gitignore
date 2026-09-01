@@ -32,6 +32,13 @@ backend/demo_data/vqa_dataset.json
 backend/.env
 backend/.env.production
 
+# Model Weights & Checkpoints (large binaries)
+*.pt
+*.pth
+*.bin
+backend/checkpoints/*.pt
+backend/checkpoints/*.pth
+
 # Editors and IDEs
 .vscode/
 .idea/
