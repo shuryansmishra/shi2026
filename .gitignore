@@ -50,12 +50,9 @@ backend/.env.*
 *.key
 *.secret
 
-# Model Weights & Checkpoints (large binaries)
-*.pt
-*.pth
-*.bin
-backend/checkpoints/*.pt
-backend/checkpoints/*.pth
+# Model Weights & Checkpoints — tracked via Git LFS (see .gitattributes)
+# Large binaries (.pt, .pth, .safetensors) are stored in LFS, not excluded.
+# backend/checkpoints/ is committed and deployed to Render automatically.
 
 # Editors and IDEs
 .vscode/
