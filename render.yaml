@@ -1,0 +1,39 @@
+# Render.com Service Configuration
+# https://render.com/docs/yaml-spec
+#
+# DEPLOY:
+#   1. Push this repo to GitHub
+#   2. Go to https://dashboard.render.com → New → Blueprint
+#   3. Connect your GitHub repo → Render reads this file automatically
+#   4. After deploy, copy your Render URL (e.g. https://satquery-backend.onrender.com)
+#   5. In Vercel dashboard → your project → Settings → Environment Variables:
+#      VITE_BACKEND_URL = https://satquery-backend.onrender.com
+#   6. Redeploy Vercel frontend (or push a commit)
+
+services:
+  - type: web
+    name: satquery-backend
+    runtime: python
+    region: oregon           # closest to India: singapore / oregon
+    plan: free               # free = 512MB RAM, mock mode only
+                             # starter ($7/mo) = 512MB RAM + persistent disk
+                             # standard ($25/mo) = 2GB RAM, can run real models
+
+    rootDir: backend         # Render runs from this directory
+    buildCommand: pip install -r requirements-render.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+    envVars:
+      - key: VQA_MOCK_MODE
+        value: "true"        # Set to "false" on paid plan with GPU/models
+      - key: ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_ORIGINS
+        value: "https://shi2026.vercel.app,https://*.vercel.app,http://localhost:5173"
+      # Optional — add these in Render dashboard (keep secrets out of git):
+      # - key: ANTHROPIC_API_KEY
+      #   value: sk-ant-...
+      # - key: QWEN_REMOTE_URL
+      #   value: https://xxxx.ngrok-free.app
