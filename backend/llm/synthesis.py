@@ -74,7 +74,7 @@ class LLMSynthesis:
 
     def _call_anthropic(self, query_text: str, evidence: EvidenceObject) -> str:
         try:
-            import anthropic
+            import anthropic  # type: ignore[import-not-found,import-untyped]
         except ImportError as exc:
             raise RuntimeError(
                 "anthropic package not installed. Run `pip install anthropic` "
@@ -106,8 +106,8 @@ class LLMSynthesis:
         if not model_path or not os.path.exists(model_path):
             raise FileNotFoundError("Local model path not found. Falling back to grounded template synthesis.")
 
-        import torch
-        from transformers import pipeline
+        import torch  # type: ignore[import-not-found,import-untyped]
+        from transformers import pipeline  # type: ignore[import-not-found,import-untyped]
 
         if not hasattr(self, '_hf_pipeline'):
             self._hf_pipeline = pipeline(

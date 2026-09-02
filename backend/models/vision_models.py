@@ -19,10 +19,10 @@ import numpy as np
 # Optional heavy ML imports — skipped on Vercel (mock mode, no torch installed)
 # ---------------------------------------------------------------------------
 try:
-    import torch
-    import torch.nn as nn
-    import torch.nn.functional as F
-    from torchvision.models import resnet18, ResNet18_Weights
+    import torch  # type: ignore[import-not-found,import-untyped]
+    import torch.nn as nn  # type: ignore[import-not-found,import-untyped]
+    import torch.nn.functional as F  # type: ignore[import-not-found,import-untyped]
+    from torchvision.models import resnet18, ResNet18_Weights  # type: ignore[import-not-found,import-untyped]
     HAS_TORCH = True
 except ImportError:
     HAS_TORCH = False
@@ -30,10 +30,11 @@ except ImportError:
     nn = None     # type: ignore[assignment]
 
 try:
-    from skimage.metrics import structural_similarity as compute_ssim
+    from skimage.metrics import structural_similarity as compute_ssim  # type: ignore[import-not-found,import-untyped]
     HAS_SKIMAGE = True
 except ImportError:
     HAS_SKIMAGE = False
+
 
 
 def calculate_image_ssim(

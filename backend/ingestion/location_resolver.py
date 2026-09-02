@@ -19,11 +19,12 @@ from models.schemas import ImageMeta, Modality, TaskType
 
 try:
     import numpy as np
-    import rasterio
-    from rasterio.transform import from_origin
+    import rasterio  # type: ignore[import-not-found,import-untyped]
+    from rasterio.transform import from_origin  # type: ignore[import-not-found,import-untyped]
     HAS_RASTERIO_LIBS = True
 except ImportError:
     HAS_RASTERIO_LIBS = False
+
 
 
 # Predefined high-fidelity fallbacks for popular locations in India
@@ -205,8 +206,8 @@ def _build_meta_from_raster(
     
     if HAS_RASTERIO_LIBS:
         try:
-            import rasterio
-            from rasterio.warp import transform_bounds
+            import rasterio  # type: ignore[import-not-found,import-untyped]
+            from rasterio.warp import transform_bounds  # type: ignore[import-not-found,import-untyped]
             with rasterio.open(path) as src:
                 crs = str(src.crs) if src.crs else crs
                 res = abs(src.transform.a) if src.transform else res
