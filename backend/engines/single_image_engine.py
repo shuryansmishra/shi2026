@@ -115,14 +115,25 @@ class SingleImageEngine:
         from PIL import Image
         from models.vision_models import TinySatCNN
 
-        model = TinySatCNN(num_classes=len(MOCK_LAND_COVER_CLASSES))
         ckpt = os.path.join(os.path.dirname(os.path.dirname(__file__)), "checkpoints", "tinysat_cnn_best.pt")
+        num_classes = len(MOCK_LAND_COVER_CLASSES)
+        state_dict = None
         if os.path.exists(ckpt):
             try:
-                model.load_state_dict(torch.load(ckpt, map_location="cpu"))
+                state_dict = torch.load(ckpt, map_location="cpu")
+                if "backbone.fc.1.weight" in state_dict:
+                    num_classes = state_dict["backbone.fc.1.weight"].shape[0]
+            except Exception:
+                pass
+
+        model = TinySatCNN(num_classes=num_classes)
+        if state_dict is not None:
+            try:
+                model.load_state_dict(state_dict)
             except Exception:
                 pass
         model.eval()
+
 
         computed_area_ha = 15.0
         img_tensor = torch.randn(1, 3, 224, 224)
