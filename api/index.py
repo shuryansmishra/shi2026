@@ -1,18 +1,40 @@
+"""
+Vercel Serverless Entrypoint for SatQuery AI
+---------------------------------------------
+This file is the ASGI adapter Vercel's Python runtime uses to serve
+the FastAPI backend as serverless functions.
+
+It runs with VQA_MOCK_MODE=True (no GPU, no large models).
+All ML inference is mocked deterministically. The backend codebase
+handles missing torch/rasterio gracefully via try/except guards.
+
+For real ML inference (local development):
+  cd backend && python -m uvicorn main:app --reload --port 8000
+"""
 import os
 import sys
 from pathlib import Path
 
-# Add backend directory to sys.path so internal imports inside backend work at runtime
-root_dir = Path(__file__).resolve().parent.parent
-backend_dir = root_dir / "backend"
+# ---------------------------------------------------------------------------
+# Path Setup — add backend/ to sys.path so `from main import app` resolves
+# ---------------------------------------------------------------------------
+_here = Path(__file__).resolve().parent        # /project/api/
+_root = _here.parent                           # /project/
+_backend = _root / "backend"                   # /project/backend/
 
-for p in [str(backend_dir), str(root_dir)]:
-    if p not in sys.path:
-        sys.path.insert(0, p)
+for _p in [str(_backend), str(_root)]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
-os.environ.setdefault("VQA_MOCK_MODE", "True")
+# ---------------------------------------------------------------------------
+# Force mock mode BEFORE any backend import — heavy ML deps not on Vercel
+# ---------------------------------------------------------------------------
+os.environ["VQA_MOCK_MODE"] = "True"
 
-# Direct import from backend package (fixes IDE unresolved import warning)
-from backend.main import app
+# ---------------------------------------------------------------------------
+# Import the FastAPI app — all heavy deps (torch, rasterio) are wrapped in
+# try/except inside vision_models.py so they fail silently when absent.
+# ---------------------------------------------------------------------------
+from main import app  # noqa: E402
 
 __all__ = ["app"]

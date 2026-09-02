@@ -1,9 +1,25 @@
-fastapi>=0.110.0
-pydantic>=2.0.0
-pydantic-settings>=2.0.0
+# Vercel Serverless Function Dependencies
+# NOTE: Heavy ML packages (torch, rasterio, transformers) are NOT listed here.
+# They are stubbed out in api/index.py. The backend runs in VQA_MOCK_MODE=True
+# on Vercel — all ML inference is deterministic mock, no GPU needed.
+
+# Core FastAPI stack
+fastapi>=0.115.0
+pydantic>=2.9.2
+pydantic-settings>=2.5.2
 python-multipart>=0.0.9
-python-dotenv>=1.0.0
-Pillow>=10.0.0
-numpy>=1.24.0
-httpx>=0.27.0
-shapely>=2.0.0
+python-dotenv>=1.0.1
+uvicorn>=0.30.6
+
+# Lightweight utilities
+Pillow>=10.4.0
+numpy>=1.26.4
+httpx>=0.27.2
+requests>=2.32.3
+
+# LLM synthesis layer (optional: template fallback works without ANTHROPIC_API_KEY)
+anthropic>=0.34.2
+
+# Agentic router (pure Python, no ML weights)
+langgraph>=0.3.0
+langchain-core>=0.3.0

@@ -14,10 +14,20 @@ import os
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torchvision.models import resnet18, ResNet18_Weights
+
+# ---------------------------------------------------------------------------
+# Optional heavy ML imports — skipped on Vercel (mock mode, no torch installed)
+# ---------------------------------------------------------------------------
+try:
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    from torchvision.models import resnet18, ResNet18_Weights
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
+    torch = None  # type: ignore[assignment]
+    nn = None     # type: ignore[assignment]
 
 try:
     from skimage.metrics import structural_similarity as compute_ssim
@@ -71,108 +81,109 @@ def calculate_image_ssim(
         return 0.85, None
 
 
-class TinySatCNN(nn.Module):
-    """
-    Lightweight CNN backbone fine-tuned on BigEarthNet spectral features.
-    """
-    def __init__(self, num_classes: int = 10):
-        super().__init__()
-        self.backbone = resnet18(weights=None)
-        self.backbone.fc = nn.Sequential(
-            nn.Dropout(0.2),
-            nn.Linear(self.backbone.fc.in_features, num_classes)
-        )
+if HAS_TORCH:
+    class TinySatCNN(nn.Module):
+        """
+        Lightweight CNN backbone fine-tuned on BigEarthNet spectral features.
+        """
+        def __init__(self, num_classes: int = 10):
+            super().__init__()
+            self.backbone = resnet18(weights=None)
+            self.backbone.fc = nn.Sequential(
+                nn.Dropout(0.2),
+                nn.Linear(self.backbone.fc.in_features, num_classes)
+            )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.backbone(x)
-
-
-class TinySiameseChange(nn.Module):
-    """
-    Bi-Temporal Siamese Change Engine (VisTA / CDVQA style).
-    Combines deep feature differences with SSIM score embeddings.
-    """
-    def __init__(self, num_classes: int = 5):
-        super().__init__()
-        self.backbone = resnet18(weights=None)
-        self.backbone.fc = nn.Identity()
-        feature_dim = 512
-
-        self.ssim_encoder = nn.Sequential(
-            nn.Linear(1, 32),
-            nn.ReLU(),
-        )
-
-        self.classifier = nn.Sequential(
-            nn.Linear(feature_dim * 2 + 32, 256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, num_classes)
-        )
-
-    def forward(self, x1: torch.Tensor, x2: torch.Tensor, ssim_score: float = 1.0) -> torch.Tensor:
-        feat1 = self.backbone(x1)
-        feat2 = self.backbone(x2)
-        diff_feat = torch.cat([feat1, feat2], dim=1)
-
-        # FIX: use actual batch size so tensor shape [B,1] matches feat1/feat2
-        batch_size = x1.size(0)
-        ssim_tensor = torch.full((batch_size, 1), ssim_score, dtype=torch.float32, device=x1.device)
-        ssim_emb = self.ssim_encoder(ssim_tensor)
-
-        combined = torch.cat([diff_feat, ssim_emb], dim=1)
-        return self.classifier(combined)
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            return self.backbone(x)
 
 
-class CrossAttentionBlock(nn.Module):
-    """Cross-Attention module between Optical and SAR feature representations."""
-    def __init__(self, dim: int = 512):
-        super().__init__()
-        self.query_opt = nn.Linear(dim, dim)
-        self.key_sar = nn.Linear(dim, dim)
-        self.val_sar = nn.Linear(dim, dim)
-        self.scale = dim ** -0.5
+    class TinySiameseChange(nn.Module):
+        """
+        Bi-Temporal Siamese Change Engine (VisTA / CDVQA style).
+        Combines deep feature differences with SSIM score embeddings.
+        """
+        def __init__(self, num_classes: int = 5):
+            super().__init__()
+            self.backbone = resnet18(weights=None)
+            self.backbone.fc = nn.Identity()
+            feature_dim = 512
 
-    def forward(self, opt_feat: torch.Tensor, sar_feat: torch.Tensor) -> torch.Tensor:
-        q = self.query_opt(opt_feat)
-        k = self.key_sar(sar_feat)
-        v = self.val_sar(sar_feat)
+            self.ssim_encoder = nn.Sequential(
+                nn.Linear(1, 32),
+                nn.ReLU(),
+            )
 
-        attn_weights = torch.softmax(torch.bmm(q.unsqueeze(1), k.unsqueeze(2)) * self.scale, dim=-1)
-        fused = opt_feat + (attn_weights.squeeze(1) * v)
-        return fused
+            self.classifier = nn.Sequential(
+                nn.Linear(feature_dim * 2 + 32, 256),
+                nn.ReLU(),
+                nn.Dropout(0.3),
+                nn.Linear(256, num_classes)
+            )
+
+        def forward(self, x1: torch.Tensor, x2: torch.Tensor, ssim_score: float = 1.0) -> torch.Tensor:
+            feat1 = self.backbone(x1)
+            feat2 = self.backbone(x2)
+            diff_feat = torch.cat([feat1, feat2], dim=1)
+
+            # FIX: use actual batch size so tensor shape [B,1] matches feat1/feat2
+            batch_size = x1.size(0)
+            ssim_tensor = torch.full((batch_size, 1), ssim_score, dtype=torch.float32, device=x1.device)
+            ssim_emb = self.ssim_encoder(ssim_tensor)
+
+            combined = torch.cat([diff_feat, ssim_emb], dim=1)
+            return self.classifier(combined)
 
 
-class TinyDualEncoderFusion(nn.Module):
-    """
-    Optical-SAR Dual-Encoder with Cross-Attention Fusion.
-    Dynamic SAR branch scaling when optical cloud cover is high.
-    """
-    def __init__(self, num_classes: int = 10):
-        super().__init__()
-        self.optical_branch = resnet18(weights=None)
-        self.optical_branch.fc = nn.Identity()
+    class CrossAttentionBlock(nn.Module):
+        """Cross-Attention module between Optical and SAR feature representations."""
+        def __init__(self, dim: int = 512):
+            super().__init__()
+            self.query_opt = nn.Linear(dim, dim)
+            self.key_sar = nn.Linear(dim, dim)
+            self.val_sar = nn.Linear(dim, dim)
+            self.scale = dim ** -0.5
 
-        self.sar_branch = resnet18(weights=None)
-        self.sar_branch.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        self.sar_branch.fc = nn.Identity()
+        def forward(self, opt_feat: torch.Tensor, sar_feat: torch.Tensor) -> torch.Tensor:
+            q = self.query_opt(opt_feat)
+            k = self.key_sar(sar_feat)
+            v = self.val_sar(sar_feat)
 
-        self.cross_attn = CrossAttentionBlock(dim=512)
+            attn_weights = torch.softmax(torch.bmm(q.unsqueeze(1), k.unsqueeze(2)) * self.scale, dim=-1)
+            fused = opt_feat + (attn_weights.squeeze(1) * v)
+            return fused
 
-        self.classifier = nn.Sequential(
-            nn.Linear(512 * 2, 256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, num_classes)
-        )
 
-    def forward(self, optical: torch.Tensor, sar: torch.Tensor, sar_weight: float = 1.0) -> torch.Tensor:
-        opt_feat = self.optical_branch(optical)
-        sar_feat = self.sar_branch(sar) * sar_weight
+    class TinyDualEncoderFusion(nn.Module):
+        """
+        Optical-SAR Dual-Encoder with Cross-Attention Fusion.
+        Dynamic SAR branch scaling when optical cloud cover is high.
+        """
+        def __init__(self, num_classes: int = 10):
+            super().__init__()
+            self.optical_branch = resnet18(weights=None)
+            self.optical_branch.fc = nn.Identity()
 
-        fused_opt = self.cross_attn(opt_feat, sar_feat)
-        combined = torch.cat([fused_opt, sar_feat], dim=1)
-        return self.classifier(combined)
+            self.sar_branch = resnet18(weights=None)
+            self.sar_branch.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.sar_branch.fc = nn.Identity()
+
+            self.cross_attn = CrossAttentionBlock(dim=512)
+
+            self.classifier = nn.Sequential(
+                nn.Linear(512 * 2, 256),
+                nn.ReLU(),
+                nn.Dropout(0.3),
+                nn.Linear(256, num_classes)
+            )
+
+        def forward(self, optical: torch.Tensor, sar: torch.Tensor, sar_weight: float = 1.0) -> torch.Tensor:
+            opt_feat = self.optical_branch(optical)
+            sar_feat = self.sar_branch(sar) * sar_weight
+
+            fused_opt = self.cross_attn(opt_feat, sar_feat)
+            combined = torch.cat([fused_opt, sar_feat], dim=1)
+            return self.classifier(combined)
 
 
 class Qwen2VLInferenceWrapper:
@@ -189,13 +200,16 @@ class Qwen2VLInferenceWrapper:
     def load_if_available(self) -> bool:
         if not self.model_path or not os.path.exists(self.model_path):
             return False
+        if not HAS_TORCH:
+            return False
         try:
             from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
             self.processor = AutoProcessor.from_pretrained(self.model_path)
+            use_gpu = torch.cuda.is_available()
             self.model = Qwen2VLForConditionalGeneration.from_pretrained(
                 self.model_path,
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="auto" if torch.cuda.is_available() else None,
+                torch_dtype=torch.float16 if use_gpu else torch.float32,
+                device_map="auto" if use_gpu else None,
             )
             self.is_loaded = True
             return True

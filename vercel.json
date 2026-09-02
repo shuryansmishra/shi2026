@@ -1,8 +1,10 @@
 {
   "version": 2,
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "destination": "/api/index.py"
     },
     {
@@ -10,11 +12,11 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/static/(.*)",
+      "source": "/static/:path*",
       "destination": "/api/index.py"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api|health|static).*)",
       "destination": "/index.html"
     }
   ]
