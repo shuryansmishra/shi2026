@@ -29,49 +29,86 @@ except ImportError:
 # Predefined high-fidelity fallbacks for popular locations in India
 # Useful for offline mode, testing, and sandboxed networks
 OFFLINE_LOCATIONS: Dict[str, Dict[str, Any]] = {
-    "hardoi": {
-        "lat": 27.3828,
-        "lon": 80.1287,
-        "bbox": [80.1087, 27.3628, 80.1487, 27.4028],
-        "name": "Hardoi, Uttar Pradesh, India"
-    },
-    "bangalore": {
-        "lat": 12.9716,
-        "lon": 77.5946,
-        "bbox": [77.5746, 12.9516, 77.6146, 12.9916],
-        "name": "Bengaluru, Karnataka, India"
-    },
-    "bengaluru": {
-        "lat": 12.9716,
-        "lon": 77.5946,
-        "bbox": [77.5746, 12.9516, 77.6146, 12.9916],
-        "name": "Bengaluru, Karnataka, India"
+    "mumbai": {
+        "lat": 19.0760,
+        "lon": 72.8777,
+        "bbox": [72.8200, 18.9000, 72.9800, 19.2500],
+        "name": "Mumbai Metropolitan, Maharashtra, India"
     },
     "delhi": {
         "lat": 28.6139,
         "lon": 77.2090,
         "bbox": [77.1890, 28.5939, 77.2290, 28.6339],
-        "name": "Delhi, India"
+        "name": "Delhi NCR Region, India"
+    },
+    "chennai": {
+        "lat": 13.0827,
+        "lon": 80.2707,
+        "bbox": [80.2000, 12.9800, 80.3200, 13.1500],
+        "name": "Chennai Coastal Sector, Tamil Nadu, India"
+    },
+    "bangalore": {
+        "lat": 12.9716,
+        "lon": 77.5946,
+        "bbox": [77.5746, 12.9516, 77.6146, 12.9916],
+        "name": "Bengaluru Urban Corridor, Karnataka, India"
+    },
+    "bengaluru": {
+        "lat": 12.9716,
+        "lon": 77.5946,
+        "bbox": [77.5746, 12.9516, 77.6146, 12.9916],
+        "name": "Bengaluru Urban Corridor, Karnataka, India"
+    },
+    "hardoi": {
+        "lat": 27.3828,
+        "lon": 80.1287,
+        "bbox": [80.1087, 27.3628, 80.1487, 27.4028],
+        "name": "Hardoi Farmland District, Uttar Pradesh, India"
+    },
+    "punjab": {
+        "lat": 30.9010,
+        "lon": 75.8573,
+        "bbox": [75.7500, 30.8000, 75.9500, 31.0000],
+        "name": "Punjab Agricultural Belt, India"
+    },
+    "chilika": {
+        "lat": 19.7165,
+        "lon": 85.3218,
+        "bbox": [85.1500, 19.5500, 85.4500, 19.8500],
+        "name": "Chilika Lake Wetland Basin, Odisha, India"
     },
     "hyderabad": {
         "lat": 17.3850,
         "lon": 78.4867,
         "bbox": [78.4667, 17.3650, 78.5067, 17.4050],
-        "name": "Hyderabad, Telangana, India"
+        "name": "Hyderabad Tech Hub, Telangana, India"
+    },
+    "kolkata": {
+        "lat": 22.5726,
+        "lon": 88.3639,
+        "bbox": [88.3000, 22.5000, 88.4200, 22.6500],
+        "name": "Kolkata Estuary Zone, West Bengal, India"
+    },
+    "lucknow": {
+        "lat": 26.8467,
+        "lon": 80.9462,
+        "bbox": [80.9262, 26.8267, 80.9662, 26.8667],
+        "name": "Lucknow Capital Zone, Uttar Pradesh, India"
     },
     "uttar pradesh": {
         "lat": 26.8467,
         "lon": 80.9462,
         "bbox": [80.9262, 26.8267, 80.9662, 26.8667],
-        "name": "Lucknow, Uttar Pradesh, India"
+        "name": "Uttar Pradesh Gangetic Plain, India"
     },
     "up": {
         "lat": 26.8467,
         "lon": 80.9462,
         "bbox": [80.9262, 26.8267, 80.9662, 26.8667],
-        "name": "Lucknow, Uttar Pradesh, India"
+        "name": "Uttar Pradesh Gangetic Plain, India"
     }
 }
+
 
 
 def geocode(place_name: str) -> Tuple[float, float, List[float], str]:
@@ -403,22 +440,46 @@ def _create_mock_geotiff(
     # Geotransform centered on target coordinates
     transform = from_origin(lon - 0.01, lat + 0.01, 0.0001, 0.0001)
     
-    seed_key = f"{lat:.6f}|{lon:.6f}|{bands}|{is_sar}|{variant}"
-    seed = int(hashlib.sha256(seed_key.encode("utf-8")).hexdigest()[:16], 16) % (2**32)
-    rng = np.random.default_rng(seed)
+    # Base terrain seed tied to coordinates
+    base_seed_key = f"{lat:.4f}|{lon:.4f}|{bands}|{is_sar}"
+    base_seed = int(hashlib.sha256(base_seed_key.encode("utf-8")).hexdigest()[:16], 16) % (2**32)
+    rng = np.random.default_rng(base_seed)
+
+    # Contextual land classification base
+    is_coastal = any(k in filename.lower() for k in ["mumbai", "chennai", "chilika", "kolkata"]) or (lon > 80.0 and lat < 20.0)
+    is_urban = any(k in filename.lower() for k in ["delhi", "bangalore", "bengaluru", "hyderabad"])
 
     data = []
-    for _ in range(bands):
-        band_data = rng.integers(0, 255, (height, width), dtype=np.uint8)
-        # Add basic structure features (e.g. blocks/lines representing land features)
-        for _ in range(5):
-            x = rng.integers(0, width - 20)
-            y = rng.integers(0, height - 20)
-            w = rng.integers(10, 40)
-            h = rng.integers(10, 40)
-            val = rng.integers(0, 255)
+    for b_idx in range(bands):
+        # Base background texture
+        if is_coastal and b_idx == 0:
+            band_data = rng.integers(20, 90, (height, width), dtype=np.uint8) # Dark water absorption
+        elif is_urban:
+            band_data = rng.integers(120, 210, (height, width), dtype=np.uint8) # High urban albedo
+        else:
+            band_data = rng.integers(60, 160, (height, width), dtype=np.uint8) # Mixed agriculture/canopy
+
+        # Add structured terrain blocks (building grids, crop parcels, waterways)
+        for _ in range(8):
+            x = rng.integers(10, width - 60)
+            y = rng.integers(10, height - 60)
+            w = rng.integers(20, 60)
+            h = rng.integers(20, 60)
+            val = rng.integers(40, 240)
             band_data[y:y+h, x:x+w] = val
-            
+
+        # If T2 (Target observation), inject distinct morphological changes (new built-up or flood extent)
+        if variant == "t2":
+            t2_rng = np.random.default_rng(base_seed + 999)
+            for _ in range(5):
+                cx = t2_rng.integers(20, width - 80)
+                cy = t2_rng.integers(20, height - 80)
+                cw = t2_rng.integers(30, 70)
+                ch = t2_rng.integers(30, 70)
+                # Significant spectral shift representing new construction / land use shift
+                shift_val = t2_rng.integers(180, 255) if b_idx == 0 else t2_rng.integers(10, 80)
+                band_data[cy:cy+ch, cx:cx+cw] = shift_val
+
         if is_sar:
             speckle = rng.normal(1.0, 0.15, (height, width))
             band_data = np.clip(band_data * speckle, 0, 255).astype(np.uint8)

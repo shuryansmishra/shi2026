@@ -70,23 +70,71 @@ export async function runLocationQuery(queryText, placeName) {
 }
 
 /**
- * Creates a synthetic demo File object (PNG dummy) if the user clicks quick demo without manual upload.
+ * Creates a synthetic demo File object with realistic satellite terrain textures.
+ * Generates distinct signatures for T1 Baseline vs T2 Target so bi-temporal
+ * change detection and SSIM algorithms detect real, measurable deltas.
  */
-export function createDemoFile(name = "sample_satellite.png") {
+export function createDemoFile(name = "sample_satellite.png", variant = "default") {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext("2d");
-  
-  // draw satellite-like texture
-  ctx.fillStyle = "#1e3a5f";
-  ctx.fillRect(0, 0, 512, 512);
-  ctx.fillStyle = "#2d5a27";
-  ctx.beginPath();
-  ctx.arc(200, 200, 120, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#8a795d";
-  ctx.fillRect(250, 100, 180, 260);
+
+  const isT2 = variant === "t2" || name.includes("t2") || name.includes("target");
+  const isSar = variant === "sar" || name.includes("sar") || name.includes("radar");
+
+  if (isSar) {
+    // SAR radar backscatter texture with speckle
+    ctx.fillStyle = "#2b2b2b";
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = "#666666";
+    ctx.fillRect(150, 100, 200, 150);
+    // Radar scatter noise
+    for (let i = 0; i < 600; i++) {
+      ctx.fillStyle = Math.random() > 0.4 ? "#ffffff" : "#111111";
+      ctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
+    }
+  } else if (isT2) {
+    // T2 Target Observation: Shows significant new urban built-up expansion & road connectivity
+    ctx.fillStyle = "#1e3a5f";
+    ctx.fillRect(0, 0, 512, 512);
+    // Shrunk water / altered wetland boundary
+    ctx.fillStyle = "#2d5a27";
+    ctx.beginPath();
+    ctx.arc(220, 180, 85, 0, Math.PI * 2);
+    ctx.fill();
+    // Cleared land
+    ctx.fillStyle = "#b09572";
+    ctx.fillRect(220, 80, 220, 290);
+    // NEW urban construction clusters (High-contrast red/orange footprints)
+    ctx.fillStyle = "#d35400";
+    ctx.fillRect(80, 300, 140, 120);
+    ctx.fillStyle = "#c0392b";
+    ctx.fillRect(260, 120, 90, 90);
+    ctx.fillStyle = "#e67e22";
+    ctx.fillRect(360, 220, 100, 80);
+    // New connecting arterial transit corridor
+    ctx.strokeStyle = "#f39c12";
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.moveTo(0, 360);
+    ctx.lineTo(512, 360);
+    ctx.stroke();
+  } else {
+    // T1 Baseline Observation: Dense vegetation & original agricultural zoning
+    ctx.fillStyle = "#1e3a5f";
+    ctx.fillRect(0, 0, 512, 512);
+    // Natural water reservoir
+    ctx.fillStyle = "#27ae60";
+    ctx.beginPath();
+    ctx.arc(200, 200, 120, 0, Math.PI * 2);
+    ctx.fill();
+    // Agricultural fields / open soil
+    ctx.fillStyle = "#8a795d";
+    ctx.fillRect(250, 100, 180, 260);
+    ctx.fillStyle = "#2ecc71";
+    ctx.fillRect(60, 280, 160, 150);
+  }
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
@@ -94,3 +142,4 @@ export function createDemoFile(name = "sample_satellite.png") {
     }, "image/png");
   });
 }
+

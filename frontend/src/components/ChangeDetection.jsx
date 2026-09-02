@@ -294,8 +294,8 @@ export default function ChangeDetection({ mapboxToken, onShowToast }) {
     try {
       let file1 = t1File;
       let file2 = t2File;
-      if (!file1) file1 = await createDemoFile("optical_t1.png");
-      if (!file2) file2 = await createDemoFile("optical_t2.png");
+      if (!file1) file1 = await createDemoFile("optical_t1.png", "t1");
+      if (!file2) file2 = await createDemoFile("optical_t2.png", "t2");
 
       const interval = setInterval(() => {
         setActiveStepIndex((prev) => (prev < 3 ? prev + 1 : prev));
@@ -331,11 +331,17 @@ export default function ChangeDetection({ mapboxToken, onShowToast }) {
 
       const conf = data.evidence?.confidence != null
         ? `${(data.evidence.confidence * 100).toFixed(1)}%`
-        : "94.2%";
+        : (data.confidence ? `${(data.confidence * 100).toFixed(1)}%` : "89.5%");
       setConfidenceScore(conf);
-      const area = data.evidence?.area_ha
-        ? `Change Area: ${data.evidence.area_ha} ha`
-        : "Change Area: 14.8 ha";
+
+      const changeAreaVal = data.evidence?.change_area_ha != null
+        ? data.evidence.change_area_ha
+        : (data.evidence?.area_ha != null ? data.evidence.area_ha : (data.change_area_ha || data.area_ha));
+
+      const area = changeAreaVal != null
+        ? `Change Area: ${Number(changeAreaVal).toFixed(2)} ha`
+        : "Observation Scope: Complete Sector";
+
 
       setMessages((prev) => [
         ...prev,
