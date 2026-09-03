@@ -20,44 +20,23 @@ services:
     region: singapore        # Closest to India for low latency
 
     # -----------------------------------------------------------------------
-    # PLAN OPTIONS — uncomment the one you want:
+    # PLAN: FREE ($0) — 100% Free, No Credit Card Required, 512 MB RAM
     # -----------------------------------------------------------------------
-    # FREE ($0) — mock mode only, sleeps after 15 min, 512 MB RAM
-    # plan: free
-    # buildCommand: pip install -r backend/requirements-render.txt
-    # envVars:
-    #   - key: VQA_MOCK_MODE
-    #     value: "true"
-
-    # STARTER ($7/mo) — always on, 512 MB RAM, mock mode (no GPU)
-    # plan: starter
-    # buildCommand: pip install -r backend/requirements-render.txt
-
-    # STANDARD ($25/mo) — 2 GB RAM, real PyTorch ML (no GPU, CPU inference)
-    plan: standard
-    buildCommand: pip install -r backend/requirements.txt
-    # -----------------------------------------------------------------------
+    plan: free
+    buildCommand: pip install -r requirements-render.txt
 
     rootDir: backend
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
 
     envVars:
-      # Real ML mode — checkpoints are in backend/checkpoints/ (tracked via Git LFS)
       - key: VQA_MOCK_MODE
-        value: "false"
-      - key: CHANGE_MODEL_PATH
-        value: "./checkpoints/siamese_change_best.pt"
-      - key: FUSION_MODEL_PATH
-        value: "./checkpoints/optical_sar_fusion_best.pt"
-      # VQA_MODEL_PATH left empty → uses TinySatCNN (Qwen too large for 2GB RAM)
-      - key: VQA_MODEL_PATH
-        value: ""
+        value: "true"
       - key: ENV
         value: production
       - key: DEBUG
         value: "false"
       - key: ALLOWED_ORIGINS
-        value: "https://shi2026.vercel.app,https://*.vercel.app,https://*.onrender.com,http://localhost:5173"
+        value: "*"
       # Add these in Render dashboard (keep secrets out of git):
       # - key: ANTHROPIC_API_KEY
       #   sync: false         # prompts for value in dashboard
