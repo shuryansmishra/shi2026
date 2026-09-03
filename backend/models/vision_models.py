@@ -22,12 +22,18 @@ try:
     import torch  # type: ignore[import-not-found,import-untyped]
     import torch.nn as nn  # type: ignore[import-not-found,import-untyped]
     import torch.nn.functional as F  # type: ignore[import-not-found,import-untyped]
-    from torchvision.models import resnet18, ResNet18_Weights  # type: ignore[import-not-found,import-untyped]
     HAS_TORCH = True
 except ImportError:
     HAS_TORCH = False
     torch = None  # type: ignore[assignment]
     nn = None     # type: ignore[assignment]
+
+try:
+    from torchvision.models import resnet18  # type: ignore[import-not-found,import-untyped]
+    HAS_TORCHVISION = True
+except ImportError:
+    HAS_TORCHVISION = False
+    resnet18 = None
 
 try:
     from skimage.metrics import structural_similarity as compute_ssim  # type: ignore[import-not-found,import-untyped]
@@ -83,16 +89,92 @@ def calculate_image_ssim(
 
 
 if HAS_TORCH:
+    def _create_resnet18_backbone():
+        if HAS_TORCHVISION and resnet18 is not None:
+            try:
+                return resnet18(weights=None)
+            except Exception:
+                pass
+
+        class ResNet18Fallback(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.features = nn.Sequential(
+                    nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False),
+                    nn.BatchNorm2d(64),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+                    nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1, bias=False),
+                    nn.BatchNorm2d(128),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1, bias=False),
+                    nn.BatchNorm2d(256),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(256, 512, kernel_size=3, stride=2, padding=1, bias=False),
+                    nn.BatchNorm2d(512),
+                    nn.ReLU(inplace=True),
+                    nn.AdaptiveAvgPool2d((1, 1)),
+                    nn.Flatten(),
+                )
+                self.fc = nn.Identity()
+
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                f = self.features(x)
+                return self.fc(f)
+
+        return ResNet18Fallback()
+
+    def _create_sar_backbone():
+        if HAS_TORCHVISION and resnet18 is not None:
+            try:
+                m = resnet18(weights=None)
+                m.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+                m.fc = nn.Identity()
+                return m
+            except Exception:
+                pass
+
+        class SARResNetFallback(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.features = nn.Sequential(
+                    nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False),
+                    nn.BatchNorm2d(64),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+                    nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1, bias=False),
+                    nn.BatchNorm2d(128),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1, bias=False),
+                    nn.BatchNorm2d(256),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(256, 512, kernel_size=3, stride=2, padding=1, bias=False),
+                    nn.BatchNorm2d(512),
+                    nn.ReLU(inplace=True),
+                    nn.AdaptiveAvgPool2d((1, 1)),
+                    nn.Flatten(),
+                )
+                self.fc = nn.Identity()
+
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                f = self.features(x)
+                return self.fc(f)
+
+        return SARResNetFallback()
+
     class TinySatCNN(nn.Module):
         """
         Lightweight CNN backbone fine-tuned on BigEarthNet spectral features.
         """
         def __init__(self, num_classes: int = 10):
             super().__init__()
-            self.backbone = resnet18(weights=None)
+            self.backbone = _create_resnet18_backbone()
+            in_f = 512
+            if hasattr(self.backbone, "fc") and hasattr(self.backbone.fc, "in_features"):
+                in_f = self.backbone.fc.in_features
             self.backbone.fc = nn.Sequential(
                 nn.Dropout(0.2),
-                nn.Linear(self.backbone.fc.in_features, num_classes)
+                nn.Linear(in_f, num_classes)
             )
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -106,7 +188,7 @@ if HAS_TORCH:
         """
         def __init__(self, num_classes: int = 5):
             super().__init__()
-            self.backbone = resnet18(weights=None)
+            self.backbone = _create_resnet18_backbone()
             self.backbone.fc = nn.Identity()
             feature_dim = 512
 
@@ -162,12 +244,10 @@ if HAS_TORCH:
         """
         def __init__(self, num_classes: int = 10):
             super().__init__()
-            self.optical_branch = resnet18(weights=None)
+            self.optical_branch = _create_resnet18_backbone()
             self.optical_branch.fc = nn.Identity()
 
-            self.sar_branch = resnet18(weights=None)
-            self.sar_branch.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-            self.sar_branch.fc = nn.Identity()
+            self.sar_branch = _create_sar_backbone()
 
             self.cross_attn = CrossAttentionBlock(dim=512)
 

@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "build": "cd frontend && npm install && npm run build",
-    "dev": "cd frontend && npm run dev"
+    "dev": "sh -c 'cd backend && python3 -m uvicorn main:app --reload --port 8000 & BACK_PID=$!; trap \"kill $BACK_PID 2>/dev/null\" EXIT INT TERM; cd frontend && npm run dev'",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python3 -m uvicorn main:app --reload --port 8000",
+    "demo": "bash run_demo.sh"
   }
 }

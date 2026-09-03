@@ -63,3 +63,53 @@ def test_grounding_subtask_selected_for_localisation_query():
 
     from models.schemas import SubTask
     assert SubTask.GROUNDING in decision.sub_tasks
+
+
+def test_query_endpoint_handles_single_capture_date():
+    from fastapi.testclient import TestClient
+    from main import app
+    import io
+    from PIL import Image
+
+    client = TestClient(app)
+    img = Image.new('RGB', (10, 10), color='green')
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+
+    res = client.post(
+        '/api/query',
+        data={'query_text': 'What land cover is visible?', 'capture_dates': '2024-08-20'},
+        files={'files': ('scene.png', buf, 'image/png')}
+    )
+    assert res.status_code == 200
+    assert "answer" in res.json()
+
+
+def test_query_endpoint_handles_bitemporal_capture_dates():
+    from fastapi.testclient import TestClient
+    from main import app
+    import io
+    from PIL import Image
+
+    client = TestClient(app)
+    img = Image.new('RGB', (10, 10), color='green')
+    buf1 = io.BytesIO()
+    img.save(buf1, format='PNG')
+    buf1.seek(0)
+    buf2 = io.BytesIO()
+    img.save(buf2, format='PNG')
+    buf2.seek(0)
+
+    res = client.post(
+        '/api/query',
+        data={'query_text': 'Detect changes between 2020 and 2024'},
+        files=[
+            ('files', ('t1.png', buf1, 'image/png')),
+            ('files', ('t2.png', buf2, 'image/png')),
+            ('capture_dates', (None, '2020-01-15')),
+            ('capture_dates', (None, '2024-08-20')),
+        ]
+    )
+    assert res.status_code == 200
+    assert "answer" in res.json()

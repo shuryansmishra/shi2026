@@ -27,14 +27,18 @@ for _p in [str(_backend), str(_root)]:
         sys.path.insert(0, _p)
 
 # ---------------------------------------------------------------------------
-# Force mock mode BEFORE any backend import — heavy ML deps not on Vercel
+# Force mock mode & serverless flag BEFORE any backend import
 # ---------------------------------------------------------------------------
+os.environ["VERCEL"] = "1"
 os.environ["VQA_MOCK_MODE"] = "True"
 
 # ---------------------------------------------------------------------------
 # Import the FastAPI app — all heavy deps (torch, rasterio) are wrapped in
 # try/except inside vision_models.py so they fail silently when absent.
 # ---------------------------------------------------------------------------
-from main import app  # noqa: E402
+try:
+    from main import app  # noqa: E402
+except ImportError:
+    from backend.main import app  # noqa: E402
 
 __all__ = ["app"]

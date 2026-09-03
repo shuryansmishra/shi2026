@@ -433,9 +433,15 @@ def _create_mock_geotiff(
     width, height = 256, 256
     
     if not HAS_RASTERIO_LIBS:
-        # Minimal file write fallback
-        with open(filename, "wb") as f:
-            f.write(b"MOCK_TIFF_DATA")
+        try:
+            from PIL import Image
+            mode = "L" if bands == 1 else "RGB"
+            color = 128 if bands == 1 else (60, 120, 60)
+            img = Image.new(mode, (width, height), color=color)
+            img.save(filename)
+        except Exception:
+            with open(filename, "wb") as f:
+                f.write(b"MOCK_TIFF_DATA")
         return
         
     # Geotransform centered on target coordinates

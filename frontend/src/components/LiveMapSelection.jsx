@@ -238,7 +238,7 @@ export default function LiveMapSelection({ mapboxToken, mapStyle, onShowToast })
         setLatInput(lat.toFixed(4));
         setLngInput(lng.toFixed(4));
 
-        const locDetails = await resolveLocationName(lng, lat, token);
+        const locDetails = await resolveLocationName(lng, lat, mapboxToken);
 
         const updated = {
           name: locDetails.name,

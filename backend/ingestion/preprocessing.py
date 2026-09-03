@@ -33,7 +33,7 @@ except ImportError:
     HAS_RASTERIO = False
 
 
-def detect_modality(file_path: str) -> Modality:
+def detect_modality(file_path: str, original_filename: Optional[str] = None) -> Modality:
     """
     Heuristic modality detection. Real pipeline should prefer explicit
     metadata (e.g. a form field or STAC item) over this guess -- this exists
@@ -41,10 +41,19 @@ def detect_modality(file_path: str) -> Modality:
     SAR products are near-universally single-band and often named with
     sensor/product-type tokens; optical scenes are usually multi-band.
     """
-    name = os.path.basename(file_path).lower()
-    sar_tokens = ("sar", "risat", "sentinel-1", "s1", "_vv", "_vh", "_hh", "_hv")
-    if any(t in name for t in sar_tokens):
-        return Modality.SAR
+    names_to_check = [os.path.basename(file_path).lower()]
+    if original_filename:
+        names_to_check.append(os.path.basename(original_filename).lower())
+
+    sar_tokens = ("sar", "risat", "sentinel-1", "s1", "_vv", "_vh", "_hh", "_hv", "radar")
+    for name in names_to_check:
+        if any(t in name for t in sar_tokens):
+            return Modality.SAR
+
+    optical_tokens = ("optical", "opt", "rgb", "sentinel-2", "s2", "cartosat", "landsat", "planet", "t1", "t2", "before", "after")
+    for name in names_to_check:
+        if any(t in name for t in optical_tokens):
+            return Modality.OPTICAL
 
     if HAS_RASTERIO:
         try:
@@ -53,7 +62,21 @@ def detect_modality(file_path: str) -> Modality:
         except Exception:
             pass
 
-    return Modality.UNKNOWN
+    # Pillow inspection fallback
+    try:
+        from PIL import Image
+        with Image.open(file_path) as img:
+            if img.mode in ("RGB", "RGBA") or (hasattr(img, "n_frames") and img.n_frames > 1):
+                return Modality.OPTICAL
+            elif img.mode in ("L", "1"):
+                return Modality.SAR
+            return Modality.OPTICAL
+    except Exception:
+        pass
+
+    # Default to OPTICAL for standard image uploads
+    return Modality.OPTICAL
+
 
 
 def reproject_to_common_crs(file_path: str, output_dir: str, target_crs: Optional[str] = None) -> str:
@@ -115,9 +138,13 @@ def estimate_cloud_cover(file_path: str) -> float:
         return 0.0
 
 
-def build_image_meta(file_path: str, file_id: Optional[str] = None) -> ImageMeta:
+def build_image_meta(
+    file_path: str,
+    file_id: Optional[str] = None,
+    original_filename: Optional[str] = None,
+) -> ImageMeta:
     """Convenience wrapper used by the API layer right after a file is saved."""
-    modality = detect_modality(file_path)
+    modality = detect_modality(file_path, original_filename=original_filename)
     cloud_cover = estimate_cloud_cover(file_path) if modality == Modality.OPTICAL else None
     
     crs_str = None

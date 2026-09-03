@@ -20,8 +20,16 @@ class RLRouterAgent:
     """
     Contextual Bandit & Q-Learning agent for satellite task routing.
     """
-    def __init__(self, q_table_path: str = "storage/q_table.json"):
-        self.q_table_path = q_table_path
+    def __init__(self, q_table_path: Optional[str] = None):
+        if q_table_path is None:
+            try:
+                from config import get_settings
+                settings = get_settings()
+                self.q_table_path = os.path.join(os.path.dirname(settings.UPLOAD_DIR), "q_table.json")
+            except Exception:
+                self.q_table_path = "storage/q_table.json"
+        else:
+            self.q_table_path = q_table_path
         self.epsilon = 0.05  # Exploration rate (decaying)
         self.alpha = 0.15   # Learning rate
         self.gamma = 0.90   # Discount factor
@@ -37,8 +45,8 @@ class RLRouterAgent:
         return {}
 
     def _save_q_table(self) -> None:
-        os.makedirs(os.path.dirname(self.q_table_path), exist_ok=True)
         try:
+            os.makedirs(os.path.dirname(self.q_table_path), exist_ok=True)
             with open(self.q_table_path, "w") as f:
                 json.dump(self.q_table, f, indent=2)
         except Exception:

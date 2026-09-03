@@ -37,7 +37,7 @@ class FusionEngine:
         if self.settings.VQA_MOCK_MODE or not self.settings.FUSION_MODEL_PATH:
             result = self._run_mock(query_text, optical, sar, sar_upweighted)
         else:
-            result = self._run_real_model(query_text, optical, sar, sar_upweighted)
+            result = self._run_real_model(query_text, optical, sar, sar_upweighted, trace)
 
         trace.add(
             step="fusion_inference",
@@ -112,7 +112,7 @@ class FusionEngine:
         return result
 
     def _run_real_model(
-        self, query_text: str, optical: ImageMeta, sar: ImageMeta, sar_upweighted: bool
+        self, query_text: str, optical: ImageMeta, sar: ImageMeta, sar_upweighted: bool, trace: ExecutionTrace
     ) -> Dict[str, Any]:
         try:
             import torch

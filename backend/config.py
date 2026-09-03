@@ -4,9 +4,27 @@ All settings are read from environment variables (.env file supported).
 Every setting has a safe local-dev default so the backend boots with
 zero configuration -- swap in real values as they become available.
 """
+import os
+import tempfile
 from functools import lru_cache
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _resolve_storage_dir(subdir: str) -> str:
+    """Redirect to /tmp on serverless environments (Vercel / Lambda) where ./ is read-only."""
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        base = os.path.join(tempfile.gettempdir(), "satquery_storage")
+    else:
+        base = "./storage"
+    return os.path.join(base, subdir)
+
+
+def _resolve_db_url() -> str:
+    """Redirect SQLite db to /tmp on serverless environments."""
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        return f"sqlite:///{tempfile.gettempdir()}/satquery.db"
+    return "sqlite:///./satquery.db"
 
 
 class Settings(BaseSettings):
@@ -22,14 +40,14 @@ class Settings(BaseSettings):
     ALLOWED_EXTENSIONS: set = {".tif", ".tiff", ".png", ".jpg", ".jpeg"}
 
     # --- Storage ---
-    UPLOAD_DIR: str = "./storage/uploads"
-    PROCESSED_DIR: str = "./storage/processed"
-    PUBLIC_STORAGE_DIR: str = "./storage/public"
+    UPLOAD_DIR: str = _resolve_storage_dir("uploads")
+    PROCESSED_DIR: str = _resolve_storage_dir("processed")
+    PUBLIC_STORAGE_DIR: str = _resolve_storage_dir("public")
     DEMO_DATA_DIR: str = "../demo_data"
     MAX_UPLOAD_MB: int = 200
 
     # --- Database (SQLite by default, zero config) ---
-    DATABASE_URL: str = "sqlite:///./satquery.db"
+    DATABASE_URL: str = _resolve_db_url()
 
     # --- LLM synthesis layer ---
     # Runs 100% locally offline using local PyTorch/HF pipeline or structured template

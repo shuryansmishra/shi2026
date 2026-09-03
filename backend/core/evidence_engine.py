@@ -95,6 +95,9 @@ class EvidenceEngine:
         or None if the required data is not available.
         """
         diff_map = raw_output.get("diff_map")
+        if diff_map is None:
+            return None
+
         transform_data = raw_output.get("raster_transform")
         raster_crs = raw_output.get("raster_crs")
 
@@ -107,7 +110,7 @@ class EvidenceEngine:
             )
             return None
 
-        if diff_map is None or not isinstance(diff_map, np.ndarray):
+        if not isinstance(diff_map, np.ndarray):
             return None
 
         try:

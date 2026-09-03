@@ -30,7 +30,7 @@ class ChangeEngine:
         if self.settings.VQA_MOCK_MODE or not self.settings.CHANGE_MODEL_PATH:
             result = self._run_mock(query_text, images)
         else:
-            result = self._run_real_model(query_text, images)
+            result = self._run_real_model(query_text, images, trace)
 
         trace.add(
             step="change_detection_inference",
@@ -102,7 +102,7 @@ class ChangeEngine:
 
         return result
 
-    def _run_real_model(self, query_text: str, images: List[ImageMeta]) -> Dict[str, Any]:
+    def _run_real_model(self, query_text: str, images: List[ImageMeta], trace: ExecutionTrace) -> Dict[str, Any]:
         try:
             import torch
             import numpy as np

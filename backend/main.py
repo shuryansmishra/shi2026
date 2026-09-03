@@ -17,9 +17,9 @@ from __future__ import annotations
 import os
 import shutil
 import uuid
-from typing import List, Optional
+from typing import Any, List, Optional
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -46,16 +46,21 @@ clean_origins = [o for o in raw_origins if "*" not in o]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=clean_origins if clean_origins else ["*"],
-    allow_origin_regex=r"https://.*\.vercel\.app" if has_vercel_wildcard else None,
+    allow_origin_regex=r"https://.*(\.vercel\.app|\.onrender\.com)" if has_vercel_wildcard else None,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Isolate public static storage (internal DB/rasters cannot be read via /static)
-os.makedirs(os.path.join(settings.PUBLIC_STORAGE_DIR, "uploads"), exist_ok=True)
-os.makedirs(os.path.join(settings.PUBLIC_STORAGE_DIR, "processed"), exist_ok=True)
-app.mount("/static", StaticFiles(directory=settings.PUBLIC_STORAGE_DIR), name="static")
+try:
+    os.makedirs(os.path.join(settings.PUBLIC_STORAGE_DIR, "uploads"), exist_ok=True)
+    os.makedirs(os.path.join(settings.PUBLIC_STORAGE_DIR, "processed"), exist_ok=True)
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    os.makedirs(settings.PROCESSED_DIR, exist_ok=True)
+    app.mount("/static", StaticFiles(directory=settings.PUBLIC_STORAGE_DIR), name="static")
+except Exception as _storage_err:
+    print(f"[!] Storage initialization warning: {_storage_err}")
 
 router_engine = AgenticRouter()
 evidence_engine = EvidenceEngine()
@@ -63,9 +68,6 @@ single_image_engine = SingleImageEngine()
 change_engine = ChangeEngine()
 fusion_engine = FusionEngine()
 llm_synthesis = LLMSynthesis()
-
-os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
-os.makedirs(settings.PROCESSED_DIR, exist_ok=True)
 
 
 @app.get("/health")
@@ -79,17 +81,32 @@ def health() -> dict:
 
 @app.post("/api/query", response_model=QueryResponse)
 async def query(
+    request: Request,
     query_text: str = Form(...),
     files: List[UploadFile] = File(...),
-    capture_dates: Optional[List[str]] = Form(None),
+    capture_dates: Optional[Any] = Form(None),
 ) -> QueryResponse:
     """
     Accepts 1 or 2 images plus a natural-language question.
-    capture_dates (optional) should line up 1:1 with files, e.g.
-    ["2024-01-15", "2024-06-20"] for a bi-temporal pair.
+    capture_dates (optional) can be a list, a single string, or comma-separated.
     """
     if len(files) not in (1, 2):
         raise HTTPException(400, "Provide exactly 1 or 2 images.")
+
+    # Robust multi-date extraction supporting single strings, lists, or multiple form values
+    form_data = await request.form()
+    raw_dates = form_data.getlist("capture_dates")
+    resolved_dates: List[str] = []
+    for d in raw_dates:
+        if isinstance(d, str):
+            for part in d.split(","):
+                part_clean = part.strip()
+                if part_clean:
+                    resolved_dates.append(part_clean)
+        elif isinstance(d, (list, tuple)):
+            for part in d:
+                if part:
+                    resolved_dates.append(str(part).strip())
 
     trace = ExecutionTrace()
     images = []
@@ -112,9 +129,9 @@ async def query(
         with open(dest_path, "wb") as f:
             shutil.copyfileobj(upload.file, f)
 
-        img_meta = build_image_meta(dest_path, file_id=file_id)
-        if capture_dates and i < len(capture_dates):
-            img_meta.capture_date = capture_dates[i]
+        img_meta = build_image_meta(dest_path, file_id=file_id, original_filename=safe_filename)
+        if resolved_dates and i < len(resolved_dates):
+            img_meta.capture_date = resolved_dates[i]
         images.append(img_meta)
 
     trace.add(

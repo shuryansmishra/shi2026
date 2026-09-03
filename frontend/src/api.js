@@ -12,20 +12,31 @@
  *   different host, otherwise fall back to relative paths.
  */
 
-const _envUrl = import.meta.env.VITE_BACKEND_URL
+const rawEnvUrl = import.meta.env.VITE_BACKEND_URL
   ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, "")
   : "";
 
-// Use the Vite dev proxy (relative URL) whenever we are on localhost.
-// This sidesteps CORS entirely — the proxy makes a server-to-server request.
+// Check if running on local dev machine
 const IS_LOCAL =
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1");
 
-// On localhost: always use relative path (Vite proxy handles it).
-// On production: use the env URL if it differs from current host, else relative.
-const API_BASE = IS_LOCAL ? "" : _envUrl;
+// Determine API_BASE:
+// 1. On localhost: always use relative path "" (Vite proxy forwards /api, /health to backend).
+// 2. On production (e.g. deployed on Vercel):
+//    - If VITE_BACKEND_URL points to localhost/127.0.0.1, ignore it (cannot reach dev machine).
+//      Instead, use same-origin relative path "" (Vercel serverless functions handle /api and /health).
+//    - If VITE_BACKEND_URL is a valid remote cloud URL (e.g. https://...onrender.com), use it.
+//    - Otherwise, use same-origin relative path "".
+let API_BASE = "";
+if (IS_LOCAL) {
+  API_BASE = "";
+} else if (rawEnvUrl && !rawEnvUrl.includes("localhost") && !rawEnvUrl.includes("127.0.0.1")) {
+  API_BASE = rawEnvUrl;
+} else {
+  API_BASE = "";
+}
 
 async function fetchWithFallback(endpoint, options) {
   const url = API_BASE + endpoint;  // e.g. "/api/query" (proxied) or "https://xxx/api/query"
