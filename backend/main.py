@@ -45,9 +45,8 @@ clean_origins = [o for o in raw_origins if "*" not in o]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=clean_origins if clean_origins else ["*"],
-    allow_origin_regex=r"https://.*(\.vercel\.app|\.onrender\.com)" if has_vercel_wildcard else None,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
