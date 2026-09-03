@@ -69,6 +69,18 @@ fusion_engine = FusionEngine()
 llm_synthesis = LLMSynthesis()
 
 
+@app.get("/")
+def root() -> dict:
+    return {
+        "status": "online",
+        "app": settings.APP_NAME,
+        "message": "SatQuery AI Backend is running successfully!",
+        "mock_mode": settings.VQA_MOCK_MODE,
+        "docs": "/docs",
+        "health": "/health",
+    }
+
+
 @app.get("/health")
 @app.get("/api/health")
 def health() -> dict:
