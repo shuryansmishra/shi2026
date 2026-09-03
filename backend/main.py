@@ -71,6 +71,7 @@ llm_synthesis = LLMSynthesis()
 
 
 @app.get("/health")
+@app.get("/api/health")
 def health() -> dict:
     return {
         "status": "ok",
@@ -80,6 +81,7 @@ def health() -> dict:
 
 
 @app.post("/api/query", response_model=QueryResponse)
+@app.post("/query", response_model=QueryResponse)
 async def query(
     request: Request,
     query_text: str = Form(...),
@@ -183,6 +185,7 @@ async def query(
 
 
 @app.post("/api/query_by_location", response_model=QueryResponse)
+@app.post("/query_by_location", response_model=QueryResponse)
 async def query_by_location(
     query_text: str = Form(...),
     place_name: str = Form(...),
