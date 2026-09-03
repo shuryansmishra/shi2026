@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "if [ -d \"frontend\" ]; then (cd frontend && npm install && npm run build); else (npm install && npm run build); fi",
     "dev": "sh -c 'cd backend && python3 -m uvicorn main:app --reload --port 8000 & BACK_PID=$!; trap \"kill $BACK_PID 2>/dev/null\" EXIT INT TERM; cd frontend && npm run dev'",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && python3 -m uvicorn main:app --reload --port 8000",
