@@ -23,7 +23,8 @@
 
 <br/>
 
-[🚀 Quickstart](#-quickstart-in-3-steps) • [✨ Key Features](#-core-capabilities) • [🏛️ Architecture](#️-system-architecture--dataflow) • [🔬 ML & Colab GPU](#-machine-learning-training--colab-gpu-bridge) • [🔒 Auth & Security](#-authentication--security-hardening) • [📡 API Docs](#-api-specification--curl-playbook) • [🧪 Test Suite](#-test-suite--verification-matrix)
+[🚀 Quickstart](#-quickstart-in-3-steps) • [✨ Key Features](#-core-capabilities) • [🏛️ Architecture](#️-system-architecture--dataflow) • [🔬 ML & Colab GPU](#-machine-learning-training--colab-gpu-bridge) • [📑 ML Model Deep-Dive](docs/ML_MODEL_ARCHITECTURE_AND_SYSTEM.md) • [🔒 Auth & Security](#-authentication--security-hardening) • [📡 API Docs](#-api-specification--curl-playbook)
+
 
 </div>
 
